@@ -1,14 +1,6 @@
-import express from 'express';
+import app from './app.js';
+import { env } from './config/env.js';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(express.json());
-
-app.get('/', (_req, res) => {
-  res.json({ message: 'TAW Rezerwacje API' });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(env.PORT, () => {
+  console.log(`Server running on http://localhost:${env.PORT}`);
 });
