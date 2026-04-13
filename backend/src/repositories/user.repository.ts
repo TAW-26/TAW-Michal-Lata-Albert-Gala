@@ -48,3 +48,43 @@ export async function activateUser(id: number): Promise<void> {
     [id],
   );
 }
+
+export async function updateProfile(
+  id: number,
+  data: { firstName?: string; lastName?: string; phone?: string; avatarUrl?: string },
+): Promise<User> {
+  const fields: string[] = [];
+  const values: unknown[] = [];
+  let paramIndex = 1;
+
+  if (data.firstName !== undefined) {
+    fields.push(`first_name = $${paramIndex++}`);
+    values.push(data.firstName);
+  }
+  if (data.lastName !== undefined) {
+    fields.push(`last_name = $${paramIndex++}`);
+    values.push(data.lastName);
+  }
+  if (data.phone !== undefined) {
+    fields.push(`phone = $${paramIndex++}`);
+    values.push(data.phone);
+  }
+  if (data.avatarUrl !== undefined) {
+    fields.push(`avatar_url = $${paramIndex++}`);
+    values.push(data.avatarUrl);
+  }
+
+  if (fields.length === 0) {
+    const user = await findById(id);
+    if (!user) throw new Error('User not found');
+    return user;
+  }
+
+  values.push(id);
+  const result = await pool.query<User>(
+    `UPDATE users SET ${fields.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
+    values,
+  );
+  return result.rows[0];
+}
+

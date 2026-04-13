@@ -7,6 +7,8 @@ export interface User {
   email: string;
   password_hash: string;
   role: string;
+  phone: string | null;
+  avatar_url: string | null;
   activation_link: string | null;
   is_activated: boolean;
   created_at: Date;
@@ -26,6 +28,13 @@ export interface LoginDTO {
 }
 
 export type UserResponse = Omit<User, 'password_hash' | 'activation_link'>;
+
+export interface UpdateProfileDTO {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  avatarUrl?: string;
+}
 
 export interface AuthRequest extends Request {
   user?: {

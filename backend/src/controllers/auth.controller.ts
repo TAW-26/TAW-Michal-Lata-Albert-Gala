@@ -1,8 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as authService from '../services/auth.service.js';
-import * as userRepository from '../repositories/user.repository.js';
 import { ApiError } from '../utils/ApiError.js';
-import type { RegisterDTO, LoginDTO, AuthRequest } from '../types/user.types.js';
+import type { RegisterDTO, LoginDTO } from '../types/user.types.js';
 
 export async function register(
   req: Request,
@@ -66,7 +65,6 @@ export async function login(
   }
 }
 
-
 export async function verify(
   req: Request,
   res: Response,
@@ -83,32 +81,6 @@ export async function verify(
 
     res.status(200).json({
         message: 'Konto zostało pomyślnie aktywowane. Możesz się teraz zalogować.',
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function getMe(
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction,
-): Promise<void> {
-  try {
-    const userId = req.user?.userId;
-    if (!userId) {
-      throw new ApiError(401, 'Nieautoryzowany');
-    }
-
-    const user = await userRepository.findById(userId);
-    if (!user) {
-      throw new ApiError(404, 'Nie znaleziono użytkownika');
-    }
-
-    const { password_hash: _, activation_link: __, ...userResponse } = user;
-
-    res.status(200).json({
-      user: userResponse,
     });
   } catch (error) {
     next(error);
