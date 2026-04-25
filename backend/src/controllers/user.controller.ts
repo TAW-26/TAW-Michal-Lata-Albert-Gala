@@ -6,7 +6,7 @@ import { ApiError } from '../utils/ApiError.js';
 export async function getMe(
   req: AuthRequest,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): Promise<void> {
   try {
     const userId = req.user?.userId;
@@ -25,7 +25,7 @@ export async function getMe(
 export async function updateMe(
   req: AuthRequest,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): Promise<void> {
   try {
     const userId = req.user?.userId;

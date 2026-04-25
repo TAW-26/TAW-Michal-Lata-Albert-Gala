@@ -6,14 +6,14 @@ import type { RegisterDTO, LoginDTO } from '../types/user.types.js';
 export async function register(
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): Promise<void> {
   try {
     const { firstName, lastName, email, password } = req.body as RegisterDTO;
 
     if (!firstName || !lastName || !email || !password) {
       throw ApiError.badRequest(
-        'Wszystkie pola są wymagane: firstName, lastName, email, password',
+        'Wszystkie pola są wymagane: firstName, lastName, email, password'
       );
     }
 
@@ -36,7 +36,7 @@ export async function register(
 export async function login(
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): Promise<void> {
   try {
     const { email, password, rememberMe } = req.body as LoginDTO;
@@ -68,7 +68,7 @@ export async function login(
 export async function verify(
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): Promise<void> {
   try {
     const { token } = req.params;
@@ -80,7 +80,8 @@ export async function verify(
     await authService.verifyEmail(token);
 
     res.status(200).json({
-        message: 'Konto zostało pomyślnie aktywowane. Możesz się teraz zalogować.',
+      message:
+        'Konto zostało pomyślnie aktywowane. Możesz się teraz zalogować.',
     });
   } catch (error) {
     next(error);
@@ -90,7 +91,7 @@ export async function verify(
 export async function logout(
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): Promise<void> {
   try {
     res.clearCookie('token', {
@@ -99,6 +100,48 @@ export async function logout(
       sameSite: 'strict',
     });
     res.status(200).json({ message: 'Wylogowano pomyślnie' });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function forgotPassword(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      throw ApiError.badRequest('Adres email jest wymagany');
+    }
+    await authService.forgotPassword(email);
+    res
+      .status(200)
+      .json({
+        message:
+          'Jeśli adres istnieje w bazie, wysłano email z linkiem resetującym',
+      });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function resetPassword(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const token = req.params.token as string;
+    const { password } = req.body;
+
+    if (!token || !password) {
+      throw ApiError.badRequest('Brak tokenu lub nowego hasła');
+    }
+
+    await authService.resetPassword(token, password);
+    res.status(200).json({ message: 'Hasło zostało pomyślnie zresetowane' });
   } catch (error) {
     next(error);
   }

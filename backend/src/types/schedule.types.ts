@@ -2,8 +2,8 @@ export interface FacilitySchedule {
   id: number;
   facility_id: number;
   day_of_week: number; // 0=Monday, 6=Sunday
-  open_time: string;   // HH:MM format
-  close_time: string;  // HH:MM format
+  open_time: string; // HH:MM format
+  close_time: string; // HH:MM format
 }
 
 export interface CreateScheduleDTO {
@@ -22,12 +22,12 @@ export interface FacilityBlock {
 
 export interface CreateBlockDTO {
   startTime: string; // ISO datetime
-  endTime: string;   // ISO datetime
+  endTime: string; // ISO datetime
   reason?: string;
 }
 
 export interface TimeSlot {
   startTime: string; // HH:MM
-  endTime: string;   // HH:MM
+  endTime: string; // HH:MM
   available: boolean;
 }

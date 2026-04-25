@@ -17,6 +17,11 @@ router.get('/:id', requireAuth, reservationController.getById);
 router.patch('/:id/cancel', requireAuth, reservationController.cancel);
 
 // PATCH /api/reservations/:id/status – Update reservation status (owner only)
-router.patch('/:id/status', requireAuth, requireOwner, reservationController.updateStatus);
+router.patch(
+  '/:id/status',
+  requireAuth,
+  requireOwner,
+  reservationController.updateStatus
+);
 
 export default router;

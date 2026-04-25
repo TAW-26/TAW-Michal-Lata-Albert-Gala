@@ -5,7 +5,11 @@ import { ApiError } from '../utils/ApiError.js';
 import { pool } from '../config/db.js';
 import type { AuthRequest } from '../types/user.types.js';
 
-export function requireAuth(req: AuthRequest, res: Response, next: NextFunction) {
+export function requireAuth(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) {
   const token = req.cookies?.token;
 
   if (!token) {
@@ -13,15 +17,27 @@ export function requireAuth(req: AuthRequest, res: Response, next: NextFunction)
   }
 
   try {
-    const decoded = jwt.verify(token, env.JWT_SECRET) as { userId: number; role: string };
+    const decoded = jwt.verify(token, env.JWT_SECRET) as {
+      userId: number;
+      role: string;
+    };
     req.user = decoded;
     next();
   } catch (error) {
-    return next(new ApiError(401, 'Nieprawidłowy lub wygasły token. Zaloguj się ponownie.'));
+    return next(
+      new ApiError(
+        401,
+        'Nieprawidłowy lub wygasły token. Zaloguj się ponownie.'
+      )
+    );
   }
 }
 
-export function requireOwner(req: AuthRequest, _res: Response, next: NextFunction) {
+export function requireOwner(
+  req: AuthRequest,
+  _res: Response,
+  next: NextFunction
+) {
   if (!req.user || req.user.role !== 'owner') {
     return next(ApiError.forbidden('Dostęp tylko dla właścicieli obiektów.'));
   }
@@ -31,7 +47,7 @@ export function requireOwner(req: AuthRequest, _res: Response, next: NextFunctio
 export async function requireOwnerOfFacility(
   req: AuthRequest,
   _res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) {
   try {
     const facilityId = parseInt(String(req.params.id), 10);
@@ -41,7 +57,7 @@ export async function requireOwnerOfFacility(
 
     const result = await pool.query(
       'SELECT owner_id FROM facilities WHERE id = $1',
-      [facilityId],
+      [facilityId]
     );
 
     if (result.rows.length === 0) {

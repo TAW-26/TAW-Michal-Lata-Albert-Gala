@@ -12,6 +12,11 @@ router.get('/me', requireAuth, userController.getMe);
 router.put('/me', requireAuth, userController.updateMe);
 
 // GET /api/users/me/facilities – Get facilities owned by current user
-router.get('/me/facilities', requireAuth, requireOwner, facilityController.getMyFacilities);
+router.get(
+  '/me/facilities',
+  requireAuth,
+  requireOwner,
+  facilityController.getMyFacilities
+);
 
 export default router;

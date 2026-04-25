@@ -1,4 +1,8 @@
-export type ReservationStatus = 'confirmed' | 'cancelled' | 'completed' | 'no_show';
+export type ReservationStatus =
+  | 'confirmed'
+  | 'cancelled'
+  | 'completed'
+  | 'no_show';
 
 export interface Reservation {
   id: number;
@@ -14,7 +18,7 @@ export interface Reservation {
 export interface CreateReservationDTO {
   facilityId: number;
   startTime: string; // ISO datetime
-  endTime: string;   // ISO datetime
+  endTime: string; // ISO datetime
 }
 
 export interface ReservationWithDetails extends Reservation {
