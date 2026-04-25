@@ -3,11 +3,16 @@ import * as facilityRepository from '../repositories/facility.repository.js';
 import * as scheduleRepository from '../repositories/schedule.repository.js';
 import * as blockRepository from '../repositories/block.repository.js';
 import { ApiError } from '../utils/ApiError.js';
-import type { Reservation, CreateReservationDTO, ReservationStatus, ReservationWithDetails } from '../types/reservation.types.js';
+import type {
+  Reservation,
+  CreateReservationDTO,
+  ReservationStatus,
+  ReservationWithDetails,
+} from '../types/reservation.types.js';
 
 export async function create(
   userId: number,
-  data: CreateReservationDTO,
+  data: CreateReservationDTO
 ): Promise<Reservation> {
   // Validate facility exists and is active
   const facility = await facilityRepository.findById(data.facilityId);
@@ -22,11 +27,15 @@ export async function create(
   const endTime = new Date(data.endTime);
 
   if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
-    throw ApiError.badRequest('Nieprawidłowy format daty. Użyj formatu ISO 8601.');
+    throw ApiError.badRequest(
+      'Nieprawidłowy format daty. Użyj formatu ISO 8601.'
+    );
   }
 
   if (startTime >= endTime) {
-    throw ApiError.badRequest('Czas rozpoczęcia musi być wcześniej niż czas zakończenia.');
+    throw ApiError.badRequest(
+      'Czas rozpoczęcia musi być wcześniej niż czas zakończenia.'
+    );
   }
 
   if (startTime < new Date()) {
@@ -36,7 +45,10 @@ export async function create(
   // Check if the slot fits within the facility's schedule
   const jsDay = startTime.getDay();
   const dayOfWeek = jsDay === 0 ? 6 : jsDay - 1;
-  const schedule = await scheduleRepository.findByFacilityIdAndDay(data.facilityId, dayOfWeek);
+  const schedule = await scheduleRepository.findByFacilityIdAndDay(
+    data.facilityId,
+    dayOfWeek
+  );
 
   if (!schedule) {
     throw ApiError.badRequest('Obiekt jest zamknięty w wybranym dniu.');
@@ -49,7 +61,7 @@ export async function create(
 
   if (startHour < scheduleOpenHour || endHour > scheduleCloseHour) {
     throw ApiError.badRequest(
-      `Rezerwacja musi mieścić się w godzinach otwarcia: ${schedule.open_time} - ${schedule.close_time}.`,
+      `Rezerwacja musi mieścić się w godzinach otwarcia: ${schedule.open_time} - ${schedule.close_time}.`
     );
   }
 
@@ -57,17 +69,19 @@ export async function create(
   const blocks = await blockRepository.findByFacilityIdAndDateRange(
     data.facilityId,
     startTime,
-    endTime,
+    endTime
   );
   if (blocks.length > 0) {
-    throw ApiError.badRequest('Wybrany termin jest zablokowany przez właściciela obiektu.');
+    throw ApiError.badRequest(
+      'Wybrany termin jest zablokowany przez właściciela obiektu.'
+    );
   }
 
   // Check for conflicting reservations
   const conflicts = await reservationRepository.findConflicting(
     data.facilityId,
     startTime,
-    endTime,
+    endTime
   );
   if (conflicts.length > 0) {
     throw ApiError.conflict('Wybrany termin jest już zarezerwowany.');
@@ -75,12 +89,22 @@ export async function create(
 
   // Calculate total price
   const hours = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
-  const totalPrice = parseFloat((hours * Number(facility.hourly_rate)).toFixed(2));
+  const totalPrice = parseFloat(
+    (hours * Number(facility.hourly_rate)).toFixed(2)
+  );
 
-  return reservationRepository.create(userId, data.facilityId, startTime, endTime, totalPrice);
+  return reservationRepository.create(
+    userId,
+    data.facilityId,
+    startTime,
+    endTime,
+    totalPrice
+  );
 }
 
-export async function getByUser(userId: number): Promise<ReservationWithDetails[]> {
+export async function getByUser(
+  userId: number
+): Promise<ReservationWithDetails[]> {
   return reservationRepository.findByUserId(userId);
 }
 
@@ -113,29 +137,37 @@ export async function cancel(id: number, userId: number): Promise<Reservation> {
   // Check 24-hour cancellation policy
   const now = new Date();
   const startTime = new Date(reservation.start_time);
-  const hoursUntilStart = (startTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+  const hoursUntilStart =
+    (startTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
   if (hoursUntilStart < 24) {
     throw ApiError.badRequest(
-      'Rezerwację można anulować najpóźniej 24 godziny przed terminem.',
+      'Rezerwację można anulować najpóźniej 24 godziny przed terminem.'
     );
   }
 
   return reservationRepository.updateStatus(id, 'cancelled');
 }
 
-export async function getByFacility(facilityId: number): Promise<ReservationWithDetails[]> {
+export async function getByFacility(
+  facilityId: number
+): Promise<ReservationWithDetails[]> {
   return reservationRepository.findByFacilityId(facilityId);
 }
 
 export async function updateStatus(
   id: number,
-  status: ReservationStatus,
+  status: ReservationStatus
 ): Promise<Reservation> {
-  const validStatuses: ReservationStatus[] = ['confirmed', 'cancelled', 'completed', 'no_show'];
+  const validStatuses: ReservationStatus[] = [
+    'confirmed',
+    'cancelled',
+    'completed',
+    'no_show',
+  ];
   if (!validStatuses.includes(status)) {
     throw ApiError.badRequest(
-      `Nieprawidłowy status. Dozwolone wartości: ${validStatuses.join(', ')}.`,
+      `Nieprawidłowy status. Dozwolone wartości: ${validStatuses.join(', ')}.`
     );
   }
 

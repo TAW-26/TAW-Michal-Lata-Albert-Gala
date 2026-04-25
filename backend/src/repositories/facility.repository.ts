@@ -27,16 +27,19 @@ export async function findAll(filters: FacilityQuery): Promise<Facility[]> {
   }
 
   if (filters.search) {
-    conditions.push(`(LOWER(name) LIKE $${paramIndex} OR LOWER(description) LIKE $${paramIndex})`);
+    conditions.push(
+      `(LOWER(name) LIKE $${paramIndex} OR LOWER(description) LIKE $${paramIndex})`
+    );
     values.push(`%${filters.search.toLowerCase()}%`);
     paramIndex++;
   }
 
-  const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  const where =
+    conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
   const result = await pool.query<Facility>(
     `SELECT * FROM facilities ${where} ORDER BY created_at DESC`,
-    values,
+    values
   );
   return result.rows;
 }
@@ -44,7 +47,7 @@ export async function findAll(filters: FacilityQuery): Promise<Facility[]> {
 export async function findById(id: number): Promise<Facility | null> {
   const result = await pool.query<Facility>(
     'SELECT * FROM facilities WHERE id = $1',
-    [id],
+    [id]
   );
   return result.rows[0] ?? null;
 }
@@ -52,7 +55,7 @@ export async function findById(id: number): Promise<Facility | null> {
 export async function findByOwnerId(ownerId: number): Promise<Facility[]> {
   const result = await pool.query<Facility>(
     'SELECT * FROM facilities WHERE owner_id = $1 ORDER BY created_at DESC',
-    [ownerId],
+    [ownerId]
   );
   return result.rows;
 }
@@ -66,13 +69,21 @@ export async function create(
     city?: string;
     address?: string;
     hourlyRate: number;
-  },
+  }
 ): Promise<Facility> {
   const result = await pool.query<Facility>(
     `INSERT INTO facilities (owner_id, name, type, description, city, address, hourly_rate, is_active)
      VALUES ($1, $2, $3, $4, $5, $6, $7, true)
      RETURNING *`,
-    [ownerId, data.name, data.type, data.description ?? null, data.city ?? null, data.address ?? null, data.hourlyRate],
+    [
+      ownerId,
+      data.name,
+      data.type,
+      data.description ?? null,
+      data.city ?? null,
+      data.address ?? null,
+      data.hourlyRate,
+    ]
   );
   return result.rows[0];
 }
@@ -87,7 +98,7 @@ export async function update(
     address?: string;
     hourlyRate?: number;
     isActive?: boolean;
-  },
+  }
 ): Promise<Facility> {
   const fields: string[] = [];
   const values: unknown[] = [];
@@ -131,14 +142,13 @@ export async function update(
   values.push(id);
   const result = await pool.query<Facility>(
     `UPDATE facilities SET ${fields.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
-    values,
+    values
   );
   return result.rows[0];
 }
 
 export async function remove(id: number): Promise<void> {
-  await pool.query(
-    'UPDATE facilities SET is_active = false WHERE id = $1',
-    [id],
-  );
+  await pool.query('UPDATE facilities SET is_active = false WHERE id = $1', [
+    id,
+  ]);
 }

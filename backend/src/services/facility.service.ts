@@ -1,6 +1,11 @@
 import * as facilityRepository from '../repositories/facility.repository.js';
 import { ApiError } from '../utils/ApiError.js';
-import type { Facility, CreateFacilityDTO, UpdateFacilityDTO, FacilityQuery } from '../types/facility.types.js';
+import type {
+  Facility,
+  CreateFacilityDTO,
+  UpdateFacilityDTO,
+  FacilityQuery,
+} from '../types/facility.types.js';
 
 export async function search(filters: FacilityQuery): Promise<Facility[]> {
   return facilityRepository.findAll(filters);
@@ -14,7 +19,10 @@ export async function getById(id: number): Promise<Facility> {
   return facility;
 }
 
-export async function create(ownerId: number, data: CreateFacilityDTO): Promise<Facility> {
+export async function create(
+  ownerId: number,
+  data: CreateFacilityDTO
+): Promise<Facility> {
   if (!data.name || !data.type || data.hourlyRate === undefined) {
     throw ApiError.badRequest('Wymagane pola: name, type, hourlyRate.');
   }
@@ -26,7 +34,10 @@ export async function create(ownerId: number, data: CreateFacilityDTO): Promise<
   return facilityRepository.create(ownerId, data);
 }
 
-export async function update(id: number, data: UpdateFacilityDTO): Promise<Facility> {
+export async function update(
+  id: number,
+  data: UpdateFacilityDTO
+): Promise<Facility> {
   const facility = await facilityRepository.findById(id);
   if (!facility) {
     throw ApiError.notFound('Obiekt sportowy nie został znaleziony.');

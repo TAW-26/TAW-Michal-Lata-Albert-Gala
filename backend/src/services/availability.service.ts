@@ -3,11 +3,17 @@ import * as blockRepository from '../repositories/block.repository.js';
 import * as reservationRepository from '../repositories/reservation.repository.js';
 import * as facilityRepository from '../repositories/facility.repository.js';
 import { ApiError } from '../utils/ApiError.js';
-import type { CreateScheduleDTO, CreateBlockDTO, FacilitySchedule, FacilityBlock, TimeSlot } from '../types/schedule.types.js';
+import type {
+  CreateScheduleDTO,
+  CreateBlockDTO,
+  FacilitySchedule,
+  FacilityBlock,
+  TimeSlot,
+} from '../types/schedule.types.js';
 
 export async function getAvailableSlots(
   facilityId: number,
-  dateStr: string,
+  dateStr: string
 ): Promise<TimeSlot[]> {
   const facility = await facilityRepository.findById(facilityId);
   if (!facility) {
@@ -16,7 +22,9 @@ export async function getAvailableSlots(
 
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) {
-    throw ApiError.badRequest('Nieprawidłowy format daty. Użyj formatu YYYY-MM-DD.');
+    throw ApiError.badRequest(
+      'Nieprawidłowy format daty. Użyj formatu YYYY-MM-DD.'
+    );
   }
 
   // Get day of week (0=Monday, 6=Sunday) - JS getDay() returns 0=Sunday
@@ -24,7 +32,10 @@ export async function getAvailableSlots(
   const dayOfWeek = jsDay === 0 ? 6 : jsDay - 1;
 
   // Get schedule for this day
-  const schedule = await scheduleRepository.findByFacilityIdAndDay(facilityId, dayOfWeek);
+  const schedule = await scheduleRepository.findByFacilityIdAndDay(
+    facilityId,
+    dayOfWeek
+  );
   if (!schedule) {
     return []; // Facility is closed on this day
   }
@@ -40,11 +51,15 @@ export async function getAvailableSlots(
   dayEnd.setHours(23, 59, 59, 999);
 
   // Get blocks and reservations for this day
-  const blocks = await blockRepository.findByFacilityIdAndDateRange(facilityId, dayStart, dayEnd);
+  const blocks = await blockRepository.findByFacilityIdAndDateRange(
+    facilityId,
+    dayStart,
+    dayEnd
+  );
   const reservations = await reservationRepository.findByFacilityIdAndDateRange(
     facilityId,
     dayStart,
-    dayEnd,
+    dayEnd
   );
 
   // Generate 1-hour slots from open to close
@@ -58,12 +73,15 @@ export async function getAvailableSlots(
 
     // Check if slot is blocked
     const isBlocked = blocks.some(
-      (block) => new Date(block.start_time) < slotEnd && new Date(block.end_time) > slotStart,
+      (block) =>
+        new Date(block.start_time) < slotEnd &&
+        new Date(block.end_time) > slotStart
     );
 
     // Check if slot is reserved
     const isReserved = reservations.some(
-      (res) => new Date(res.start_time) < slotEnd && new Date(res.end_time) > slotStart,
+      (res) =>
+        new Date(res.start_time) < slotEnd && new Date(res.end_time) > slotStart
     );
 
     const startTimeStr = `${hour.toString().padStart(2, '0')}:00`;
@@ -81,7 +99,7 @@ export async function getAvailableSlots(
 
 export async function setSchedule(
   facilityId: number,
-  schedules: CreateScheduleDTO[],
+  schedules: CreateScheduleDTO[]
 ): Promise<FacilitySchedule[]> {
   const facility = await facilityRepository.findById(facilityId);
   if (!facility) {
@@ -91,7 +109,9 @@ export async function setSchedule(
   // Validate each schedule entry
   for (const s of schedules) {
     if (s.dayOfWeek < 0 || s.dayOfWeek > 6) {
-      throw ApiError.badRequest('dayOfWeek musi być w zakresie 0-6 (0=Poniedziałek, 6=Niedziela).');
+      throw ApiError.badRequest(
+        'dayOfWeek musi być w zakresie 0-6 (0=Poniedziałek, 6=Niedziela).'
+      );
     }
     if (!s.openTime || !s.closeTime) {
       throw ApiError.badRequest('openTime i closeTime są wymagane.');
@@ -108,7 +128,7 @@ export async function setSchedule(
       facilityId,
       s.dayOfWeek,
       s.openTime,
-      s.closeTime,
+      s.closeTime
     );
     results.push(schedule);
   }
@@ -118,7 +138,7 @@ export async function setSchedule(
 
 export async function createBlock(
   facilityId: number,
-  data: CreateBlockDTO,
+  data: CreateBlockDTO
 ): Promise<FacilityBlock> {
   const facility = await facilityRepository.findById(facilityId);
   if (!facility) {
@@ -129,16 +149,22 @@ export async function createBlock(
   const endTime = new Date(data.endTime);
 
   if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
-    throw ApiError.badRequest('Nieprawidłowy format daty. Użyj formatu ISO 8601.');
+    throw ApiError.badRequest(
+      'Nieprawidłowy format daty. Użyj formatu ISO 8601.'
+    );
   }
 
   if (startTime >= endTime) {
-    throw ApiError.badRequest('Czas rozpoczęcia musi być wcześniej niż czas zakończenia.');
+    throw ApiError.badRequest(
+      'Czas rozpoczęcia musi być wcześniej niż czas zakończenia.'
+    );
   }
 
   return blockRepository.create(facilityId, startTime, endTime, data.reason);
 }
 
-export async function getSchedule(facilityId: number): Promise<FacilitySchedule[]> {
+export async function getSchedule(
+  facilityId: number
+): Promise<FacilitySchedule[]> {
   return scheduleRepository.findByFacilityId(facilityId);
 }

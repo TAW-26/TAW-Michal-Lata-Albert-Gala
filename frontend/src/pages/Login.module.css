@@ -1,0 +1,195 @@
+.pageBackground {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background-color: var(--color-white, white);
+}
+
+.pageBackground::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+    url('../images/login_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: blur(5px);
+  z-index: -1;
+}
+
+.container {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.leftCard {
+  background-color: var(--color-white);
+  padding: 48px 32px;
+  border-radius: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+}
+
+.overlayTitle {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  font-weight: 700 !important;
+}
+
+.overlaySubtitle {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  font-weight: 500 !important;
+}
+
+.overlayAuthors {
+  margin-bottom: 0 !important;
+  color: var(--color-grey) !important;
+}
+
+.rightCard {
+  background-color: var(--color-white);
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.heading {
+  margin-bottom: 24px;
+}
+
+.titleMain {
+  margin-top: 0 !important;
+  color: var(--color-blue) !important;
+  font-weight: 700 !important;
+  margin-bottom: 16px !important;
+}
+
+.subtitleMain {
+  font-weight: 400 !important;
+  font-size: 16px !important;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+}
+
+.inputGroup label {
+  color: var(--color-blue);
+  font-size: 16px;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.inputGroup input {
+  background-color: #d9d9d9;
+  border: 2px solid var(--color-blue);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-family: var(--font-family);
+  font-size: 16px;
+  outline: none;
+  color: var(--color-black);
+}
+
+.inputGroup input:focus {
+  box-shadow: 0 0 0 2px rgba(71, 166, 255, 0.2);
+}
+
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.checkboxGroup input[type='checkbox'] {
+  width: 24px;
+  height: 24px;
+  appearance: none;
+  background-color: #d9d9d9;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.checkboxGroup input[type='checkbox']:checked::after {
+  content: '✓';
+  color: var(--color-blue);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.checkboxGroup label {
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.loginLink {
+  margin-top: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.loginLink a {
+  color: var(--color-blue);
+  text-decoration: underline;
+  margin-left: 4px;
+}
+
+.forgotPasswordLink a {
+  color: var(--color-blue);
+  text-decoration: underline;
+  margin-left: 4px;
+}
+
+.errorMessage {
+  color: #ff4d4f;
+  font-size: 14px;
+  margin-top: 4px;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .leftCard {
+    display: none;
+  }
+  .rightCard {
+    padding: 32px 24px;
+  }
+}
+
+.actionLinks {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  gap: -16px;
+}
+.actionLinks p {
+  margin-bottom: 0;
+}

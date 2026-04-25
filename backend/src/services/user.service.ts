@@ -14,7 +14,7 @@ export async function getProfile(userId: number): Promise<UserResponse> {
 
 export async function updateProfile(
   userId: number,
-  data: UpdateProfileDTO,
+  data: UpdateProfileDTO
 ): Promise<UserResponse> {
   const user = await userRepository.findById(userId);
   if (!user) {

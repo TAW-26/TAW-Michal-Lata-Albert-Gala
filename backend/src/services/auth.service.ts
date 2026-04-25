@@ -14,9 +14,7 @@ export async function register(dto: RegisterDTO): Promise<UserResponse> {
 
   const existingUser = await userRepository.findByEmail(email);
   if (existingUser) {
-    throw ApiError.conflict(
-      'Użytkownik o podanym adresie email już istnieje',
-    );
+    throw ApiError.conflict('Użytkownik o podanym adresie email już istnieje');
   }
 
   const activationLink = crypto.randomBytes(32).toString('hex');
@@ -24,27 +22,27 @@ export async function register(dto: RegisterDTO): Promise<UserResponse> {
   const passwordHash = await bcrypt.hash(password, ROUNDS);
 
   const user = await userRepository.create(
-    firstName, 
-    lastName, 
-    email, 
-    passwordHash, 
+    firstName,
+    lastName,
+    email,
+    passwordHash,
     activationLink
   );
 
   const verifyUrl = `http://localhost:3000/api/auth/verify/${activationLink}`;
-  
+
   emailService.sendVerificationEmail({
     to: email,
     verificationLink: verifyUrl,
   });
 
-  const { password_hash: _, activation_link: __, ...userResponse } = user;
+  const { password_hash: _, activation_link: _al, ...userResponse } = user;
   return userResponse;
 }
 
 export async function login(
   email: string,
-  password: string,
+  password: string
 ): Promise<{ user: UserResponse; token: string }> {
   const user = await userRepository.findByEmail(email);
   if (!user) {
@@ -52,7 +50,10 @@ export async function login(
   }
 
   if (!user.is_activated) {
-    throw new ApiError(403, 'Konto nie zostało aktywowane. Sprawdź swoją skrzynkę email.');
+    throw new ApiError(
+      403,
+      'Konto nie zostało aktywowane. Sprawdź swoją skrzynkę email.'
+    );
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password_hash);
@@ -60,13 +61,11 @@ export async function login(
     throw new ApiError(401, 'Nieprawidłowy email lub hasło');
   }
 
-  const token = jwt.sign(
-    { userId: user.id, role: user.role },
-    env.JWT_SECRET,
-    { expiresIn: '30d' }
-  );
+  const token = jwt.sign({ userId: user.id, role: user.role }, env.JWT_SECRET, {
+    expiresIn: '30d',
+  });
 
-  const { password_hash: _, activation_link: __, ...userResponse } = user;
+  const { password_hash: _, activation_link: _al, ...userResponse } = user;
   return { user: userResponse, token };
 }
 
@@ -81,4 +80,34 @@ export async function verifyEmail(token: string): Promise<void> {
   }
 
   await userRepository.activateUser(user.id);
+}
+
+export async function forgotPassword(email: string): Promise<void> {
+  const user = await userRepository.findByEmail(email);
+  if (!user) {
+    throw new ApiError(404, 'Użytkownik o podanym adresie email nie istnieje.');
+  }
+
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  await userRepository.setResetToken(user.id, resetToken);
+
+  const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+
+  emailService.sendForgotPasswordEmail({
+    to: email,
+    resetLink: resetUrl,
+  });
+}
+
+export async function resetPassword(
+  token: string,
+  newPassword: string
+): Promise<void> {
+  const user = await userRepository.findByResetToken(token);
+  if (!user) {
+    throw new ApiError(400, 'Nieprawidłowy lub wygasły link resetujący hasło.');
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, ROUNDS);
+  await userRepository.resetPassword(user.id, passwordHash);
 }

@@ -1,13 +1,16 @@
 import type { Request, Response, NextFunction } from 'express';
 import * as availabilityService from '../services/availability.service.js';
 import type { AuthRequest } from '../types/user.types.js';
-import type { CreateScheduleDTO, CreateBlockDTO } from '../types/schedule.types.js';
+import type {
+  CreateScheduleDTO,
+  CreateBlockDTO,
+} from '../types/schedule.types.js';
 import { ApiError } from '../utils/ApiError.js';
 
 export async function getAvailability(
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): Promise<void> {
   try {
     const facilityId = parseInt(String(req.params.id), 10);
@@ -17,7 +20,9 @@ export async function getAvailability(
 
     const date = req.query.date as string;
     if (!date) {
-      throw ApiError.badRequest('Parametr date jest wymagany (format: YYYY-MM-DD).');
+      throw ApiError.badRequest(
+        'Parametr date jest wymagany (format: YYYY-MM-DD).'
+      );
     }
 
     const slots = await availabilityService.getAvailableSlots(facilityId, date);
@@ -31,7 +36,7 @@ export async function getAvailability(
 export async function setSchedule(
   req: AuthRequest,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): Promise<void> {
   try {
     const facilityId = parseInt(String(req.params.id), 10);
@@ -41,7 +46,9 @@ export async function setSchedule(
 
     const schedules = req.body.schedules as CreateScheduleDTO[];
     if (!schedules || !Array.isArray(schedules) || schedules.length === 0) {
-      throw ApiError.badRequest('Wymagana jest tablica schedules w ciele zapytania.');
+      throw ApiError.badRequest(
+        'Wymagana jest tablica schedules w ciele zapytania.'
+      );
     }
 
     const result = await availabilityService.setSchedule(facilityId, schedules);
@@ -58,7 +65,7 @@ export async function setSchedule(
 export async function createBlock(
   req: AuthRequest,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): Promise<void> {
   try {
     const facilityId = parseInt(String(req.params.id), 10);
@@ -85,7 +92,7 @@ export async function createBlock(
 export async function getSchedule(
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): Promise<void> {
   try {
     const facilityId = parseInt(String(req.params.id), 10);

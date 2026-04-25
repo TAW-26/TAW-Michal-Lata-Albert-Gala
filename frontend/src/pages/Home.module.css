@@ -1,0 +1,169 @@
+.container {
+  margin-left: 80px;
+  margin-right: 80px;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  background-color: linear;
+}
+
+.titleStart {
+  background: linear-gradient(90deg, var(--color-blue), var(--color-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  font-size: 36px !important;
+}
+
+.titleStartParagraph {
+  color: var(--color-grey) !important;
+  text-align: center;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  margin-bottom: 32px !important;
+}
+
+.cardsWrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.authInfo {
+  background-color: var(--color-grey-bg);
+  padding: 32px;
+  border-radius: 12px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.textTitle {
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  margin-bottom: 16px !important;
+}
+
+.textTitleSmall {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  margin-bottom: 0 !important;
+}
+
+.linkButtons {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  gap: 12px;
+}
+
+.bottomInfo {
+  margin-top: 16px;
+}
+
+.offersContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+}
+
+.offersTitle {
+  font-weight: 700 !important;
+  margin-bottom: 8px !important;
+}
+
+.offersArrows {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.offersIconLeft {
+  color: var(--color-blue);
+  font-size: 40px;
+  rotate: -135deg;
+}
+
+.offersIconRight {
+  color: var(--color-blue);
+  font-size: 40px;
+  rotate: 45deg;
+}
+
+.howItWorksSection {
+  text-align: center;
+  margin-top: 48px;
+  margin-bottom: 24px;
+}
+
+.howItWorksTitle {
+  font-size: 32px !important;
+  font-weight: 700 !important;
+}
+
+.howItWorksPar {
+  color: var(--color-grey) !important;
+  font-size: 16px !important;
+}
+
+.stepCard {
+  border: 3px solid var(--color-grey-bg);
+  border-radius: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stepCard:hover {
+  scale: 1.05;
+  transition: all 0.3s ease;
+}
+
+.stepIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--color-blue);
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+
+.stepNumber {
+  color: var(--color-blue) !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  margin-bottom: 4px !important;
+}
+
+.stepTitle {
+  font-weight: 700 !important;
+  margin-bottom: 8px !important;
+}
+
+.stepDesc {
+  color: var(--color-grey) !important;
+  font-size: 14px !important;
+  margin-bottom: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .container {
+    margin-left: 16px;
+    margin-right: 16px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+  .offersArrows {
+    display: none;
+  }
+}
