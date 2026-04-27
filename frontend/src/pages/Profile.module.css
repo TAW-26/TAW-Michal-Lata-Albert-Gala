@@ -1,0 +1,150 @@
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 24px;
+}
+
+.profileCard {
+  background: var(--color-white);
+  border: 2px solid var(--color-blue);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 8px 32px rgba(71, 166, 255, 0.1);
+}
+
+.titleMain {
+  background: linear-gradient(90deg, var(--color-blue), var(--color-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin-bottom: 32px !important;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  color: var(--color-blue) !important;
+  margin-bottom: 16px !important;
+  font-size: 18px !important;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-grey-bg);
+}
+
+.infoLabel {
+  color: var(--color-grey);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.infoValue {
+  color: var(--color-black);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.inputGroup label {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-grey);
+}
+
+.inputGroup input {
+  padding: 10px 14px;
+  border: 2px solid var(--color-blue);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--font-family);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.inputGroup input:focus {
+  border-color: var(--color-green);
+}
+
+.successMessage {
+  color: var(--color-green);
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.errorMessage {
+  color: #e74c3c;
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.dangerSection {
+  border: 2px solid #e74c3c;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.dangerTitle {
+  color: #e74c3c !important;
+  margin-bottom: 8px !important;
+  font-size: 18px !important;
+}
+
+.dangerText {
+  color: var(--color-grey);
+  font-size: 14px;
+  margin-bottom: 16px !important;
+}
+
+.dangerButton {
+  background-color: #e74c3c;
+  color: var(--color-white);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: all 0.2s ease;
+}
+
+.dangerButton:hover {
+  background-color: #c0392b;
+  transform: scale(1.02);
+}
+
+.dangerButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .container {
+    margin: 16px auto;
+  }
+
+  .profileCard {
+    padding: 24px;
+  }
+
+  .infoRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}

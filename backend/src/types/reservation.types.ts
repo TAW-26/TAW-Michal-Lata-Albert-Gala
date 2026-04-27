@@ -19,6 +19,10 @@ export interface CreateReservationDTO {
   facilityId: number;
   startTime: string; // ISO datetime
   endTime: string; // ISO datetime
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
 }
 
 export interface ReservationWithDetails extends Reservation {

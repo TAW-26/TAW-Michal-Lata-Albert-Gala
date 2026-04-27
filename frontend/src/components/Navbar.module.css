@@ -1,0 +1,180 @@
+.navbar {
+  background-color: var(--color-white);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 80px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.3s ease;
+}
+
+.logo {
+  color: var(--color-blue);
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.7;
+}
+
+/* Desktop nav actions */
+.navActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.navButton {
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-family: var(--font-family);
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.navButtonOutline {
+  background-color: transparent;
+  color: var(--color-blue);
+  border: 2px solid var(--color-blue);
+}
+
+.navButtonOutline:hover {
+  background-color: var(--color-blue);
+  color: var(--color-white);
+}
+
+.navButtonFilled {
+  background-color: var(--color-blue);
+  color: var(--color-white);
+  border: 2px solid var(--color-blue);
+}
+
+.navButtonFilled:hover {
+  background-color: #3594e8;
+  border-color: #3594e8;
+}
+
+.navButtonDanger {
+  background-color: transparent;
+  color: #e74c3c;
+  border: 2px solid #e74c3c;
+}
+
+.navButtonDanger:hover {
+  background-color: #e74c3c;
+  color: var(--color-white);
+}
+
+/* Burger button — hidden on desktop */
+.burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  z-index: 1001;
+}
+
+.burgerLine {
+  display: block;
+  width: 24px;
+  height: 2.5px;
+  background-color: var(--color-blue);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+/* Burger → X animation */
+.burgerOpen .burgerLine:nth-child(1) {
+  transform: translateY(7.5px) rotate(45deg);
+}
+
+.burgerOpen .burgerLine:nth-child(2) {
+  opacity: 0;
+}
+
+.burgerOpen .burgerLine:nth-child(3) {
+  transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* Overlay (mobile menu backdrop) */
+.overlay {
+  display: none;
+}
+
+/* ========= Mobile ========= */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 12px 16px;
+  }
+
+  .burger {
+    display: flex;
+  }
+
+  .navActions {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 260px;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(16px);
+    flex-direction: column;
+    align-items: stretch;
+    padding: 80px 24px 32px;
+    gap: 12px;
+    transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+  }
+
+  .navActionsOpen {
+    right: 0;
+  }
+
+  .navButton {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 15px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 998;
+  }
+}

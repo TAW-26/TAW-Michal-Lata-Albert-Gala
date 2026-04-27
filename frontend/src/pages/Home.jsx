@@ -103,13 +103,15 @@ const Home = () => {
                 </Title>
               </div>
               <div className={styles.linkButtons}>
-                <Button
-                  style={{ width: '200px' }}
-                  variant='signup'
-                  type='button'
-                >
-                  Przeglądaj jako gość
-                </Button>
+                <Link to='/choose'>
+                  <Button
+                    style={{ width: '200px' }}
+                    variant='signup'
+                    type='button'
+                  >
+                    Przeglądaj jako gość
+                  </Button>
+                </Link>
               </div>
               <div className={styles.bottomInfo}>
                 <Title className={styles.textTitleSmall} level={5}>

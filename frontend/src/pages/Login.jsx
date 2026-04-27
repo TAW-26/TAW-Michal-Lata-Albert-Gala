@@ -1,14 +1,15 @@
 import styles from './Login.module.css';
 import { Row, Col, Typography } from 'antd';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Button from '../components/Buttons';
 
 const { Title, Paragraph } = Typography;
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const {
     register,
     handleSubmit,
@@ -28,6 +29,7 @@ const Login = () => {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
+        credentials: 'include',
       });
       const responseData = await response.json();
       if (!response.ok) {
@@ -35,6 +37,7 @@ const Login = () => {
           responseData.error || 'Wystapil blad podczas logowania'
         );
       }
+      login(responseData.user);
       navigate('/choose');
     } catch (err) {
       console.error(err);

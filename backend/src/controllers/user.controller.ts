@@ -44,3 +44,57 @@ export async function updateMe(
     next(error);
   }
 }
+
+export async function changePassword(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      throw new ApiError(401, 'Nieautoryzowany');
+    }
+
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      throw new ApiError(400, 'Obecne hasło i nowe hasło są wymagane.');
+    }
+
+    await userService.changePassword(userId, currentPassword, newPassword);
+
+    res.status(200).json({
+      message: 'Hasło zostało zmienione pomyślnie.',
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteMe(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      throw new ApiError(401, 'Nieautoryzowany');
+    }
+
+    await userService.deleteAccount(userId);
+
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+
+    res.status(200).json({
+      message: 'Konto zostało usunięte.',
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+

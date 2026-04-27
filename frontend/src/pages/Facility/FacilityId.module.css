@@ -215,9 +215,137 @@
   background: #3594e8 !important;
 }
 
+.slotsSection {
+  margin-top: 16px;
+}
+
+.slotsTitle {
+  color: var(--color-blue) !important;
+  margin-bottom: 12px !important;
+  font-size: 14px !important;
+}
+
+.slotsLoading {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+.noSlots {
+  color: var(--color-grey);
+  font-size: 14px;
+  text-align: center;
+}
+
+.slotsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 8px;
+}
+
+.slotAvailable {
+  padding: 8px 4px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid var(--color-blue);
+  color: var(--color-blue);
+  background: var(--color-white);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.slotAvailable:hover {
+  background: rgba(71, 166, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.slotUnavailable {
+  padding: 8px 4px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  border: 2px solid #d9d9d9;
+  color: #bfbfbf;
+  background: #f5f5f5;
+  cursor: not-allowed;
+  user-select: none;
+}
+
+.slotSelected {
+  padding: 8px 4px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid var(--color-green);
+  color: var(--color-white);
+  background: var(--color-green);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.slotSelected:hover {
+  opacity: 0.9;
+}
+
+.selectedTime {
+  margin-top: 12px !important;
+  text-align: center;
+  color: var(--color-green);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.loginPrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.loginPromptIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.loginPromptTitle {
+  color: var(--color-blue) !important;
+  margin-bottom: 8px !important;
+}
+
+.loginPromptText {
+  color: var(--color-grey);
+  font-size: 14px;
+  margin-bottom: 24px !important;
+  max-width: 280px;
+}
+
+.registerButton {
+  border-radius: 8px !important;
+  border: 2px solid var(--color-blue) !important;
+  color: var(--color-blue) !important;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+  height: 48px !important;
+  background: transparent !important;
+}
+
+.registerButton:hover {
+  background: rgba(71, 166, 255, 0.1) !important;
+}
+
 @media (max-width: 768px) {
   .container {
     margin-left: 16px;
     margin-right: 16px;
   }
 }
+

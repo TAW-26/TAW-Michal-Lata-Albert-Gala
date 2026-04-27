@@ -51,3 +51,35 @@ export async function sendForgotPasswordEmail(
     console.error('Błąd podczas wysyłania emaila do resetu hasła:', error);
   }
 }
+
+export async function sendReservationConfirmationEmail(
+  dto: import('../types/email.types.js').ReservationEmailDTO
+) {
+  try {
+    await transporter.sendMail({
+      from: env.SMTP_USER,
+      to: dto.to,
+      subject: `Potwierdzenie rezerwacji: ${dto.facilityName} - TAW Rezerwacje`,
+      html: `
+            <h2>Potwierdzenie rezerwacji</h2>
+            <p>Witaj <strong>${dto.userName}</strong>,</p>
+            <p>Twoja rezerwacja została pomyślnie utworzona. Poniżej znajdują się szczegóły:</p>
+            <div style="background-color: #f4f7ff; padding: 20px; border-radius: 10px; margin: 20px 0;">
+              <p><strong>Obiekt:</strong> ${dto.facilityName}</p>
+              <p><strong>Data:</strong> ${dto.date}</p>
+              <p><strong>Godzina:</strong> ${dto.time}</p>
+            </div>
+            <h3>Twoje dane z formularza:</h3>
+            <ul>
+              <li><strong>Email:</strong> ${dto.userEmail}</li>
+              <li><strong>Telefon:</strong> ${dto.userPhone}</li>
+            </ul>
+            <p style="margin-top: 25px;">Dziękujemy za skorzystanie z naszego serwisu!</p>
+            <p style="font-size: 12px; color: #777;">To jest wiadomość automatyczna, prosimy na nią nie odpowiadać.</p>
+            `,
+    });
+    console.log(`Email z potwierdzeniem rezerwacji został wysłany do: ${dto.to}`);
+  } catch (error) {
+    console.error('Błąd podczas wysyłania emaila z potwierdzeniem rezerwacji:', error);
+  }
+}

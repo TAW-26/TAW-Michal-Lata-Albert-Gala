@@ -13,3 +13,13 @@ export interface ForgotPasswordEmailDTO {
   to: string;
   resetLink: string;
 }
+
+export interface ReservationEmailDTO {
+  to: string;
+  userName: string;
+  facilityName: string;
+  date: string;
+  time: string;
+  userPhone: string;
+  userEmail: string;
+}

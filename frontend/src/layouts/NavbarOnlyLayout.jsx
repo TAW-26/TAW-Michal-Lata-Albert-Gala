@@ -1,8 +1,7 @@
 import { Outlet } from 'react-router-dom';
-import Footer from '../components/Footer.jsx';
 import Navbar from '../components/Navbar.jsx';
 
-const MainLayout = () => {
+const NavbarOnlyLayout = () => {
   return (
     <div
       style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
@@ -11,9 +10,8 @@ const MainLayout = () => {
       <div style={{ flex: 1, paddingTop: '68px' }}>
         <Outlet />
       </div>
-      <Footer />
     </div>
   );
 };
 
-export default MainLayout;
+export default NavbarOnlyLayout;

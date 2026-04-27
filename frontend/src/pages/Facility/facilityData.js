@@ -12,6 +12,8 @@ const facilityData = {
     hoursWeekday: '9:00-21:00',
     hoursWeekend: '11:00-21:00',
     image: footballImg,
+    slotDuration: 2,
+    priceInfo: '300 zł / 2h',
   },
   2: {
     name: 'Kort do tenisa',
@@ -22,6 +24,8 @@ const facilityData = {
     hoursWeekday: '8:00-22:00',
     hoursWeekend: '10:00-20:00',
     image: tennisImg,
+    slotDuration: 1,
+    priceInfo: '80 zł / 1h',
   },
   3: {
     name: 'Sala do squasha',
@@ -32,6 +36,8 @@ const facilityData = {
     hoursWeekday: '7:00-22:00',
     hoursWeekend: '9:00-21:00',
     image: squashImg,
+    slotDuration: 1,
+    priceInfo: '60 zł / 1h',
   },
 };
 

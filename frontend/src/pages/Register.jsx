@@ -29,6 +29,7 @@ const Register = () => {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
+        credentials: 'include',
       });
       const responseData = await response.json();
 

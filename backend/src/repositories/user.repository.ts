@@ -118,3 +118,17 @@ export async function updateProfile(
   );
   return result.rows[0];
 }
+
+export async function changePassword(
+  id: number,
+  passwordHash: string
+): Promise<void> {
+  await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [
+    passwordHash,
+    id,
+  ]);
+}
+
+export async function deleteById(id: number): Promise<void> {
+  await pool.query('DELETE FROM users WHERE id = $1', [id]);
+}

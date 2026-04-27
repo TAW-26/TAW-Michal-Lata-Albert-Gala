@@ -2,6 +2,8 @@ import * as reservationRepository from '../repositories/reservation.repository.j
 import * as facilityRepository from '../repositories/facility.repository.js';
 import * as scheduleRepository from '../repositories/schedule.repository.js';
 import * as blockRepository from '../repositories/block.repository.js';
+import * as userRepository from '../repositories/user.repository.js';
+import * as emailService from './email.service.js';
 import { ApiError } from '../utils/ApiError.js';
 import type {
   Reservation,
@@ -93,13 +95,35 @@ export async function create(
     (hours * Number(facility.hourly_rate)).toFixed(2)
   );
 
-  return reservationRepository.create(
+  const reservation = await reservationRepository.create(
     userId,
     data.facilityId,
     startTime,
     endTime,
     totalPrice
   );
+
+  // Send confirmation email
+  try {
+    const user = await userRepository.findById(userId);
+    if (user) {
+      const emailData = {
+        to: user.email!,
+        userName: `${data.firstName || user.first_name} ${data.lastName || user.last_name}`,
+        facilityName: facility.name!,
+        date: startTime.toLocaleDateString('pl-PL'),
+        time: `${startTime.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })} - ${endTime.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}`,
+        userPhone: data.phone || user.phone || 'Nie podano',
+        userEmail: data.email || user.email!,
+      };
+      await emailService.sendReservationConfirmationEmail(emailData);
+    }
+  } catch (emailErr) {
+    console.error('Failed to send reservation confirmation email:', emailErr);
+    // Don't throw error here, reservation is already created
+  }
+
+  return reservation;
 }
 
 export async function getByUser(
