@@ -1,0 +1,223 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  margin-left: 80px;
+  margin-right: 80px;
+}
+
+.cardTitle {
+  color: var(--color-blue) !important;
+}
+
+.facilityCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 24px;
+  padding: 32px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  gap: 24px;
+  height: 100%;
+  min-height: 420px;
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.facilityCard:hover {
+  transform: scale(1.04);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
+}
+
+.facilityDescription {
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 24px;
+  padding: 24px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.aboutContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 6px;
+}
+
+.aboutLabel {
+  margin-bottom: 0 !important;
+  line-height: 1.3 !important;
+}
+
+.aboutValue {
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+  line-height: 1.3 !important;
+  font-size: 14px;
+}
+
+.titleInfo {
+  text-align: center;
+  background: linear-gradient(90deg, var(--color-blue), var(--color-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 36px !important;
+}
+
+.titleInfo4 {
+  color: var(--color-grey) !important;
+  text-align: center;
+  font-weight: 600 !important;
+}
+
+.calendarCard {
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px;
+  padding: 32px;
+  height: 100%;
+  min-height: 420px;
+  border: 2px solid var(--color-blue);
+  background: var(--color-white);
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.calendarCard:hover {
+  transform: scale(1.04);
+  box-shadow: 0 12px 36px rgba(71, 166, 255, 0.15);
+}
+
+.calendarTitle {
+  background: linear-gradient(90deg, var(--color-blue), var(--color-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px !important;
+}
+
+.calendarSubtitle {
+  color: var(--color-grey) !important;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px !important;
+}
+
+.calendarWrapper {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e8e8e8;
+}
+
+.selectedDate {
+  margin-top: 12px !important;
+  text-align: center;
+  color: var(--color-grey);
+  font-size: 14px;
+}
+
+.formCard {
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px;
+  padding: 32px;
+  height: 100%;
+  min-height: 420px;
+  background: var(--color-white);
+  border: 2px solid var(--color-blue);
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.formCard:hover {
+  transform: scale(1.04);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
+}
+
+.formTitle {
+  color: var(--color-black) !important;
+  font-style: italic;
+  margin-bottom: 16px !important;
+}
+
+.formFields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.formInput {
+  border-radius: 8px !important;
+  border: 2px solid var(--color-blue) !important;
+}
+
+.paymentSection {
+  margin-bottom: 20px;
+}
+
+.paymentLabel {
+  color: var(--color-grey);
+  font-weight: 600;
+  margin-bottom: 8px !important;
+}
+
+.paymentOptions {
+  display: flex;
+  gap: 12px;
+}
+
+.paymentOptionActive {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 2px solid var(--color-blue);
+  background: rgba(71, 166, 255, 0.1);
+  color: var(--color-blue);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.paymentOptionActive:hover {
+  background: rgba(71, 166, 255, 0.2);
+}
+
+.emailInfo {
+  color: var(--color-grey);
+  font-size: 16px;
+  text-align: left;
+  margin-bottom: 12px !important;
+  margin-top: 4px !important;
+}
+
+.submitButton {
+  border-radius: 8px !important;
+  background: var(--color-blue) !important;
+  border: none !important;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+  height: 48px !important;
+  margin-top: auto;
+}
+
+.submitButton:hover {
+  background: #3594e8 !important;
+}
+
+@media (max-width: 768px) {
+  .container {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+}

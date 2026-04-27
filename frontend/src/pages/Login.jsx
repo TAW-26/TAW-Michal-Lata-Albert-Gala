@@ -2,11 +2,13 @@ import styles from './Login.module.css';
 import { Row, Col, Typography } from 'antd';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/Buttons';
 
 const { Title, Paragraph } = Typography;
 
 const Login = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -33,6 +35,7 @@ const Login = () => {
           responseData.error || 'Wystapil blad podczas logowania'
         );
       }
+      navigate('/choose');
     } catch (err) {
       console.error(err);
       setError('root', {

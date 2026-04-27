@@ -9,6 +9,8 @@ import Register from './pages/Register.jsx';
 import Login from './pages/Login.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
+import Choose from './pages/ChooseScreen.jsx';
+import FacilityId from './pages/Facility/FacilityId.jsx';
 
 const router = createBrowserRouter([
   {
@@ -18,6 +20,14 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <Home />,
+      },
+      {
+        path: '/choose',
+        element: <Choose />,
+      },
+      {
+        path: '/facility/:id',
+        element: <FacilityId />,
       },
     ],
   },

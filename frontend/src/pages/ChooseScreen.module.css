@@ -1,0 +1,118 @@
+.container {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  margin-left: 80px;
+  margin-right: 80px;
+}
+
+.titleMain {
+  background: linear-gradient(90deg, var(--color-blue), var(--color-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  font-size: 36px !important;
+}
+
+.titleMainDescription {
+  color: var(--color-grey) !important;
+  text-align: center;
+  font-weight: 600 !important;
+  margin-bottom: 32px !important;
+}
+
+.facilityCard,
+.facilityCard2,
+.facilityCard3 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 24px;
+  padding: 32px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  gap: 24px;
+  height: 100%;
+  min-height: 420px;
+  cursor: pointer;
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.containerInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.facilityCard:hover,
+.facilityCard2:hover,
+.facilityCard3:hover {
+  transform: scale(1.04);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
+}
+
+.facilityCard {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url('../images/register_img.webp');
+}
+
+.facilityCard2 {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url('../images/kort_tenisowy.jpg');
+}
+
+.facilityCard3 {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url('../images/squas.jpg');
+}
+
+.facilityDescription {
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 24px;
+  padding: 24px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cardTitle {
+  color: var(--color-blue) !important;
+}
+
+.cardParagrapgh {
+  color: var(--color-black);
+  margin-bottom: 0 !important;
+}
+
+.cardLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .container {
+    margin-left: 16px;
+    margin-right: 16px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+  .titleMain {
+    font-size: 24px !important;
+  }
+  .titleMainDescription {
+    font-size: 14px !important;
+  }
+}
