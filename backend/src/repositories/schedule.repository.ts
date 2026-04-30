@@ -44,3 +44,13 @@ export async function deleteByFacilityId(facilityId: number): Promise<void> {
     facilityId,
   ]);
 }
+
+export async function deleteByFacilityAndDay(
+  facilityId: number,
+  dayOfWeek: number
+): Promise<void> {
+  await pool.query(
+    'DELETE FROM facility_schedules WHERE facility_id = $1 AND day_of_week = $2',
+    [facilityId, dayOfWeek]
+  );
+}

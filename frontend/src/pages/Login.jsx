@@ -10,10 +10,6 @@ const { Title, Paragraph } = Typography;
 const Login = () => {
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuth();
-
-  if (isAuthenticated) {
-    return <Navigate to='/choose' replace />;
-  }
   const {
     register,
     handleSubmit,
@@ -23,6 +19,10 @@ const Login = () => {
     mode: 'onBlur',
     reValidateMode: 'onBlur',
   });
+
+  if (isAuthenticated) {
+    return <Navigate to='/choose' replace />;
+  }
 
   const handleLogin = async (data) => {
     try {

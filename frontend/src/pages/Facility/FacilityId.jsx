@@ -306,16 +306,16 @@ const FacilityId = () => {
                   </strong>
                 </Paragraph>
                 {schedules.length > 0 ? (
-                  <>
-                    <Paragraph className={styles.aboutValue}>
-                      <strong>Pon-Pt </strong>
-                      {getHoursDisplay('weekday')}
-                    </Paragraph>
-                    <Paragraph className={styles.aboutValue}>
-                      <strong>Sob-Nd </strong>
-                      {getHoursDisplay('weekend')}
-                    </Paragraph>
-                  </>
+                  <div className={styles.scheduleList}>
+                    {perDaySchedule.map((day) => (
+                      <div key={day.day} className={styles.scheduleRow}>
+                        <span className={styles.scheduleDay}>{day.day}</span>
+                        <span className={styles.scheduleHours}>
+                          {day.hours}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <Paragraph className={styles.aboutValue}>
                     Brak danych o godzinach

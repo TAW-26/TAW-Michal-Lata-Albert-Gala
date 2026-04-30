@@ -254,10 +254,9 @@ const ScheduleTab = () => {
         closeTime: s.closeTime,
       }));
 
-    if (toSend.length === 0) {
-      message.warning('Zaznacz przynajmniej jeden dzień.');
-      return;
-    }
+    const disabledDays = schedules
+      .filter((s) => !s.enabled)
+      .map((s) => s.dayOfWeek);
 
     setSaving(true);
     try {
@@ -267,7 +266,7 @@ const ScheduleTab = () => {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ schedules: toSend }),
+          body: JSON.stringify({ schedules: toSend, disabledDays }),
         }
       );
       if (!res.ok) {

@@ -83,14 +83,21 @@ export async function updateFacilitySchedule(
       throw ApiError.badRequest('Nieprawidłowe ID obiektu.');
     }
 
-    const schedules = req.body.schedules;
-    if (!schedules || !Array.isArray(schedules) || schedules.length === 0) {
-      throw ApiError.badRequest(
-        'Wymagana jest tablica schedules w ciele zapytania.'
-      );
+    const { schedules, disabledDays } = req.body;
+
+    // Delete disabled days from DB
+    if (disabledDays && Array.isArray(disabledDays)) {
+      const scheduleRepo = await import('../repositories/schedule.repository.js');
+      for (const dayOfWeek of disabledDays) {
+        await scheduleRepo.deleteByFacilityAndDay(facilityId, dayOfWeek);
+      }
     }
 
-    const result = await availabilityService.setSchedule(facilityId, schedules);
+    // Upsert enabled days
+    let result: any[] = [];
+    if (schedules && Array.isArray(schedules) && schedules.length > 0) {
+      result = await availabilityService.setSchedule(facilityId, schedules);
+    }
 
     res.status(200).json({
       message: 'Harmonogram został zaktualizowany.',
