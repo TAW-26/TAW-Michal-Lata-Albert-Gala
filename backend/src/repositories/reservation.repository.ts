@@ -90,7 +90,7 @@ export async function create(
 ): Promise<Reservation> {
   const result = await pool.query<Reservation>(
     `INSERT INTO reservations (user_id, facility_id, start_time, end_time, status, total_price)
-     VALUES ($1, $2, $3, $4, 'confirmed', $5)
+     VALUES ($1, $2, $3, $4, 'pending', $5)
      RETURNING *`,
     [userId, facilityId, startTime, endTime, totalPrice]
   );
@@ -106,4 +106,53 @@ export async function updateStatus(
     [status, id]
   );
   return result.rows[0];
+}
+
+export async function updateStatusWithReason(
+  id: number,
+  status: ReservationStatus,
+  reason: string | null
+): Promise<Reservation> {
+  const result = await pool.query<Reservation>(
+    'UPDATE reservations SET status = $1, rejected_reason = $2 WHERE id = $3 RETURNING *',
+    [status, reason, id]
+  );
+  return result.rows[0];
+}
+
+export async function findByStatus(
+  status: ReservationStatus
+): Promise<ReservationWithDetails[]> {
+  const result = await pool.query<ReservationWithDetails>(
+    `SELECT r.*, f.name AS facility_name, f.type AS facility_type,
+            u.first_name AS user_first_name, u.last_name AS user_last_name, u.email AS user_email
+     FROM reservations r
+     JOIN facilities f ON r.facility_id = f.id
+     JOIN users u ON r.user_id = u.id
+     WHERE r.status = $1
+     ORDER BY r.created_at DESC`,
+    [status]
+  );
+  return result.rows;
+}
+
+export async function findAllWithDetails(
+  status?: ReservationStatus
+): Promise<ReservationWithDetails[]> {
+  let query = `SELECT r.*, f.name AS facility_name, f.type AS facility_type,
+            u.first_name AS user_first_name, u.last_name AS user_last_name, u.email AS user_email
+     FROM reservations r
+     JOIN facilities f ON r.facility_id = f.id
+     JOIN users u ON r.user_id = u.id`;
+  const values: unknown[] = [];
+
+  if (status) {
+    query += ' WHERE r.status = $1';
+    values.push(status);
+  }
+
+  query += ' ORDER BY r.created_at DESC';
+
+  const result = await pool.query<ReservationWithDetails>(query, values);
+  return result.rows;
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import styles from './FacilityId.module.css';
@@ -12,15 +12,21 @@ import {
   Spin,
   message,
 } from 'antd';
-import facilityData from './facilityData';
+import { getFacilityMeta } from './facilityData';
 import { useAuth } from '../../context/AuthContext';
 
 const { Title, Paragraph } = Typography;
 
+const DAY_NAMES_SHORT = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nd'];
+
 const FacilityId = () => {
   const { id } = useParams();
-  const facility = facilityData[id];
   const { user, isAuthenticated } = useAuth();
+
+  const [facility, setFacility] = useState(null);
+  const [schedules, setSchedules] = useState([]);
+  const [loadingFacility, setLoadingFacility] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [slots, setSlots] = useState([]);
@@ -28,42 +34,116 @@ const FacilityId = () => {
   const [selectedSlotIndex, setSelectedSlotIndex] = useState(null);
 
   const [formData, setFormData] = useState({
-    firstName: user?.first_name || '',
-    lastName: user?.last_name || '',
-    email: user?.email || '',
-    phone: user?.phone || '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
   });
   const [submitting, setSubmitting] = useState(false);
   const [phoneError, setPhoneError] = useState('');
+
+  // Fetch facility details + schedule from API
+  useEffect(() => {
+    const fetchFacility = async () => {
+      setLoadingFacility(true);
+      try {
+        const [facilityRes, scheduleRes] = await Promise.all([
+          fetch(`http://localhost:3000/api/facilities/${id}`, {
+            credentials: 'include',
+          }),
+          fetch(`http://localhost:3000/api/facilities/${id}/schedule`, {
+            credentials: 'include',
+          }),
+        ]);
+
+        if (!facilityRes.ok) {
+          setNotFound(true);
+          return;
+        }
+
+        const facilityData = await facilityRes.json();
+        setFacility(facilityData.facility);
+
+        if (scheduleRes.ok) {
+          const scheduleData = await scheduleRes.json();
+          setSchedules(scheduleData.schedules || []);
+        }
+      } catch (err) {
+        console.error('Error fetching facility:', err);
+        setNotFound(true);
+      } finally {
+        setLoadingFacility(false);
+      }
+    };
+    fetchFacility();
+  }, [id]);
+
+  // Pre-fill form when user data loads
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.first_name || '',
+        lastName: user.last_name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+      });
+    }
+  }, [user]);
+
+  if (notFound) {
+    return <Navigate to='/choose' replace />;
+  }
+
+  if (loadingFacility) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '60vh',
+        }}
+      >
+        <Spin size='large' />
+      </div>
+    );
+  }
 
   if (!facility) {
     return <Navigate to='/choose' replace />;
   }
 
-  const slotDuration = facility.slotDuration || 1;
+  const meta = getFacilityMeta(facility.type);
+  const slotDuration = meta.slotDuration || 1;
+
+  // Build hours display from schedules
+  const getHoursDisplay = (dayRange) => {
+    const days = dayRange === 'weekday' ? [0, 1, 2, 3, 4] : [5, 6];
+    const daySchedules = schedules.filter((s) => days.includes(s.day_of_week));
+    if (daySchedules.length === 0) return 'Zamknięte';
+
+    // Find most common pattern
+    const openTime = daySchedules[0]?.open_time?.substring(0, 5) || '—';
+    const closeTime = daySchedules[0]?.close_time?.substring(0, 5) || '—';
+    return `${openTime}-${closeTime}`;
+  };
+
+  // Build per-day schedule display
+  const getPerDaySchedule = () => {
+    return DAY_NAMES_SHORT.map((name, i) => {
+      const s = schedules.find((sch) => sch.day_of_week === i);
+      if (!s) return { day: name, hours: 'Zamknięte' };
+      return {
+        day: name,
+        hours: `${s.open_time.substring(0, 5)}-${s.close_time.substring(0, 5)}`,
+      };
+    });
+  };
+
+  const priceInfo = `${Number(facility.hourly_rate).toFixed(0)} zł / ${slotDuration}h`;
 
   const disabledDate = (current) => {
     return current && current < dayjs().startOf('day');
-  };
-
-  const generateFallbackSlots = (dateStr) => {
-    const date = new Date(dateStr);
-    const dayOfWeek = date.getDay();
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-    const hoursStr = isWeekend ? facility.hoursWeekend : facility.hoursWeekday;
-    const [openStr, closeStr] = hoursStr.split('-');
-    const openHour = parseInt(openStr.split(':')[0], 10);
-    const closeHour = parseInt(closeStr.split(':')[0], 10);
-
-    const fallbackSlots = [];
-    for (let hour = openHour; hour < closeHour; hour++) {
-      fallbackSlots.push({
-        startTime: `${hour.toString().padStart(2, '0')}:00`,
-        endTime: `${(hour + 1).toString().padStart(2, '0')}:00`,
-        available: true,
-      });
-    }
-    return fallbackSlots;
   };
 
   const fetchSlots = async (dateStr) => {
@@ -77,18 +157,13 @@ const FacilityId = () => {
       );
       if (response.ok) {
         const data = await response.json();
-        const apiSlots = data.slots || [];
-        if (apiSlots.length > 0) {
-          setSlots(apiSlots);
-        } else {
-          setSlots(generateFallbackSlots(dateStr));
-        }
+        setSlots(data.slots || []);
       } else {
-        setSlots(generateFallbackSlots(dateStr));
+        setSlots([]);
       }
     } catch (err) {
       console.error('Error fetching slots:', err);
-      setSlots(generateFallbackSlots(dateStr));
+      setSlots([]);
     } finally {
       setLoadingSlots(false);
     }
@@ -167,7 +242,9 @@ const FacilityId = () => {
       if (!response.ok) {
         throw new Error(data.error || 'Błąd tworzenia rezerwacji');
       }
-      message.success('Rezerwacja została utworzona pomyślnie!');
+      message.success(
+        'Rezerwacja została wysłana! Oczekuje na zatwierdzenie przez administratora.'
+      );
       fetchSlots(dateStr);
       setSelectedSlotIndex(null);
     } catch (err) {
@@ -182,6 +259,8 @@ const FacilityId = () => {
       ? `${slots[selectedSlotIndex].startTime} - ${slots[selectedSlotIndex + slotDuration - 1].endTime}`
       : null;
 
+  const perDaySchedule = getPerDaySchedule();
+
   return (
     <div className={styles.container}>
       <Row gutter={[24, 24]} align='middle' justify='center'>
@@ -190,7 +269,6 @@ const FacilityId = () => {
             {facility.name}
           </Title>
           <Title className={styles.titleInfo4} level={4}>
-            {facility.subtitle} <br />
             Sprawdź ogólne informacje o tym obiekcie <br /> i zdecyduj czy to
             jest to czego szukasz
           </Title>
@@ -201,7 +279,7 @@ const FacilityId = () => {
           <div
             className={styles.facilityCard}
             style={{
-              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${facility.image})`,
+              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${meta.image})`,
             }}
           >
             <div className={styles.facilityDescription}>
@@ -218,7 +296,7 @@ const FacilityId = () => {
                   </strong>
                 </Paragraph>
                 <Paragraph className={styles.aboutValue}>
-                  {facility.surfaceType}
+                  {meta.surfaceType}
                 </Paragraph>
               </div>
               <div className={styles.aboutContainer}>
@@ -227,14 +305,22 @@ const FacilityId = () => {
                     Godziny wynajmu:
                   </strong>
                 </Paragraph>
-                <Paragraph className={styles.aboutValue}>
-                  <strong>Pon-Pt </strong>
-                  {facility.hoursWeekday}
-                </Paragraph>
-                <Paragraph className={styles.aboutValue}>
-                  <strong>Sob-Nd </strong>
-                  {facility.hoursWeekend}
-                </Paragraph>
+                {schedules.length > 0 ? (
+                  <div className={styles.scheduleList}>
+                    {perDaySchedule.map((day) => (
+                      <div key={day.day} className={styles.scheduleRow}>
+                        <span className={styles.scheduleDay}>{day.day}</span>
+                        <span className={styles.scheduleHours}>
+                          {day.hours}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <Paragraph className={styles.aboutValue}>
+                    Brak danych o godzinach
+                  </Paragraph>
+                )}
               </div>
               <div className={styles.aboutContainer}>
                 <Paragraph className={styles.aboutLabel}>
@@ -253,7 +339,7 @@ const FacilityId = () => {
                   </strong>
                 </Paragraph>
                 <Paragraph className={styles.aboutValue}>
-                  {facility.priceInfo}
+                  {priceInfo}
                 </Paragraph>
               </div>
             </div>
@@ -389,8 +475,8 @@ const FacilityId = () => {
                   </div>
                 </div>
                 <Paragraph className={styles.emailInfo}>
-                  Po zatwierdzeniu rezerwacji potwierdzenie przyjdzie na podany
-                  adres e-mail.
+                  Po zatwierdzeniu rezerwacji przez administratora potwierdzenie
+                  przyjdzie na podany adres e-mail.
                 </Paragraph>
                 <Button
                   type='primary'

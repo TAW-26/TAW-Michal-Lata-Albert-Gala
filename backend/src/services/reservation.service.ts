@@ -79,7 +79,7 @@ export async function create(
     );
   }
 
-  // Check for conflicting reservations
+  // Check for conflicting reservations (pending and confirmed both block)
   const conflicts = await reservationRepository.findConflicting(
     data.facilityId,
     startTime,
@@ -95,6 +95,7 @@ export async function create(
     (hours * Number(facility.hourly_rate)).toFixed(2)
   );
 
+  // Create reservation with 'pending' status (no email yet — admin must approve)
   const reservation = await reservationRepository.create(
     userId,
     data.facilityId,
@@ -102,26 +103,6 @@ export async function create(
     endTime,
     totalPrice
   );
-
-  // Send confirmation email
-  try {
-    const user = await userRepository.findById(userId);
-    if (user) {
-      const emailData = {
-        to: user.email!,
-        userName: `${data.firstName || user.first_name} ${data.lastName || user.last_name}`,
-        facilityName: facility.name!,
-        date: startTime.toLocaleDateString('pl-PL'),
-        time: `${startTime.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })} - ${endTime.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}`,
-        userPhone: data.phone || user.phone || 'Nie podano',
-        userEmail: data.email || user.email!,
-      };
-      await emailService.sendReservationConfirmationEmail(emailData);
-    }
-  } catch (emailErr) {
-    console.error('Failed to send reservation confirmation email:', emailErr);
-    // Don't throw error here, reservation is already created
-  }
 
   return reservation;
 }
@@ -184,10 +165,12 @@ export async function updateStatus(
   status: ReservationStatus
 ): Promise<Reservation> {
   const validStatuses: ReservationStatus[] = [
+    'pending',
     'confirmed',
     'cancelled',
     'completed',
     'no_show',
+    'rejected',
   ];
   if (!validStatuses.includes(status)) {
     throw ApiError.badRequest(
@@ -201,4 +184,92 @@ export async function updateStatus(
   }
 
   return reservationRepository.updateStatus(id, status);
+}
+
+export async function approveReservation(id: number): Promise<Reservation> {
+  const reservation = await reservationRepository.findById(id);
+  if (!reservation) {
+    throw ApiError.notFound('Rezerwacja nie została znaleziona.');
+  }
+
+  if (reservation.status !== 'pending') {
+    throw ApiError.badRequest(
+      'Tylko rezerwacje ze statusem "pending" mogą być zatwierdzane.'
+    );
+  }
+
+  const updated = await reservationRepository.updateStatus(id, 'confirmed');
+
+  // Send approval email to user
+  try {
+    const user = await userRepository.findById(reservation.user_id);
+    const facility = await facilityRepository.findById(reservation.facility_id);
+    if (user && facility) {
+      const startTime = new Date(reservation.start_time);
+      const endTime = new Date(reservation.end_time);
+      await emailService.sendReservationApprovedEmail({
+        to: user.email,
+        userName: `${user.first_name} ${user.last_name}`,
+        facilityName: facility.name,
+        date: startTime.toLocaleDateString('pl-PL'),
+        time: `${startTime.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })} - ${endTime.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}`,
+        status: 'approved',
+      });
+    }
+  } catch (emailErr) {
+    console.error('Failed to send approval email:', emailErr);
+  }
+
+  return updated;
+}
+
+export async function rejectReservation(
+  id: number,
+  reason?: string
+): Promise<Reservation> {
+  const reservation = await reservationRepository.findById(id);
+  if (!reservation) {
+    throw ApiError.notFound('Rezerwacja nie została znaleziona.');
+  }
+
+  if (reservation.status !== 'pending') {
+    throw ApiError.badRequest(
+      'Tylko rezerwacje ze statusem "pending" mogą być odrzucane.'
+    );
+  }
+
+  const updated = await reservationRepository.updateStatusWithReason(
+    id,
+    'rejected',
+    reason || null
+  );
+
+  // Send rejection email to user
+  try {
+    const user = await userRepository.findById(reservation.user_id);
+    const facility = await facilityRepository.findById(reservation.facility_id);
+    if (user && facility) {
+      const startTime = new Date(reservation.start_time);
+      const endTime = new Date(reservation.end_time);
+      await emailService.sendReservationRejectedEmail({
+        to: user.email,
+        userName: `${user.first_name} ${user.last_name}`,
+        facilityName: facility.name,
+        date: startTime.toLocaleDateString('pl-PL'),
+        time: `${startTime.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })} - ${endTime.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}`,
+        status: 'rejected',
+        reason,
+      });
+    }
+  } catch (emailErr) {
+    console.error('Failed to send rejection email:', emailErr);
+  }
+
+  return updated;
+}
+
+export async function getAllReservations(
+  status?: ReservationStatus
+): Promise<ReservationWithDetails[]> {
+  return reservationRepository.findAllWithDetails(status);
 }

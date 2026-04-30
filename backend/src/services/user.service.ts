@@ -57,3 +57,27 @@ export async function deleteAccount(userId: number): Promise<void> {
   await userRepository.deleteById(userId);
 }
 
+export async function getAllUsers(): Promise<UserResponse[]> {
+  const users = await userRepository.findAll();
+  return users.map((user) => {
+    const { password_hash: _, activation_link: __, ...userResponse } = user;
+    return userResponse;
+  });
+}
+
+export async function getUserWithReservations(
+  userId: number
+): Promise<{ user: UserResponse; reservations: import('../types/reservation.types.js').ReservationWithDetails[] }> {
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    throw ApiError.notFound('Nie znaleziono użytkownika.');
+  }
+
+  const { password_hash: _, activation_link: __, ...userResponse } = user;
+
+  const reservationRepository = await import('../repositories/reservation.repository.js');
+  const reservations = await reservationRepository.findByUserId(userId);
+
+  return { user: userResponse, reservations };
+}
+

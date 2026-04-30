@@ -1,8 +1,10 @@
 export type ReservationStatus =
+  | 'pending'
   | 'confirmed'
   | 'cancelled'
   | 'completed'
-  | 'no_show';
+  | 'no_show'
+  | 'rejected';
 
 export interface Reservation {
   id: number;
@@ -12,6 +14,7 @@ export interface Reservation {
   end_time: Date;
   status: ReservationStatus;
   total_price: number;
+  rejected_reason: string | null;
   created_at: Date;
 }
 
