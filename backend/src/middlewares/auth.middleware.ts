@@ -44,6 +44,17 @@ export function requireOwner(
   next();
 }
 
+export function requireAdmin(
+  req: AuthRequest,
+  _res: Response,
+  next: NextFunction
+) {
+  if (!req.user || req.user.role !== 'admin') {
+    return next(ApiError.forbidden('Dostęp tylko dla administratorów.'));
+  }
+  next();
+}
+
 export async function requireOwnerOfFacility(
   req: AuthRequest,
   _res: Response,

@@ -1,11 +1,50 @@
+import { useState, useEffect } from 'react';
 import styles from './ChooseScreen.module.css';
-import { Row, Col, Typography } from 'antd';
+import { Row, Col, Typography, Spin } from 'antd';
 import { Link } from 'react-router-dom';
 import Button from '../components/Buttons';
+import { getFacilityMeta } from './Facility/facilityData';
 
 const { Title, Paragraph } = Typography;
 
 const ChooseScreen = () => {
+  const [facilities, setFacilities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFacilities = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/facilities', {
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setFacilities(data.facilities || []);
+        }
+      } catch (err) {
+        console.error('Error fetching facilities:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFacilities();
+  }, []);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '60vh',
+        }}
+      >
+        <Spin size='large' />
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       <Row gutter={[24, 24]} align='middle' justify='center'>
@@ -20,71 +59,30 @@ const ChooseScreen = () => {
         </div>
       </Row>
       <Row gutter={[24, 24]} align='middle' justify='center'>
-        <Col span={4} xs={24} md={12} xl={8}>
-          <Link to='/facility/1' className={styles.cardLink}>
-            <div className={styles.facilityCard}>
-              <div className={styles.facilityDescription}>
-                <Title className={styles.cardTitle} level={3}>
-                  Boisko do piłki nożnej
-                </Title>
-                <Paragraph className={styles.cardParagrapgh}>
-                  Pełnowymiarowe boisko <br /> do z sztuczną nawierzchnią <br />{' '}
-                  przeznaczone do prefesjonalnych <br />
-                  treningów jak do <br /> amatorskich rozgrywek
-                </Paragraph>
-              </div>
-              <div className={styles.facilityButton}>
-                <Button style={{ width: '100%' }} variant='signup'>
-                  Sprawdź terminy
-                </Button>
-              </div>
-            </div>
-          </Link>
-        </Col>
-        <Col span={4} xs={24} md={12} xl={8}>
-          <Link to='/facility/2' className={styles.cardLink}>
-            <div className={styles.facilityCard2}>
-              <div className={styles.facilityDescription}>
-                <Title className={styles.cardTitle} level={3}>
-                  Kort do tenisa
-                </Title>
-                <Paragraph className={styles.cardParagrapgh}>
-                  Pełnowymiarowy kort do tenisa <br /> z wysokiej jakości
-                  sztuczną nawirzchnią, <br /> przystostowane zarówno do
-                  profesjonalnych treningów, <br />
-                  jak i rekreacyjych rozgrywek amatorskich <br /> amatorskich
-                  rozgrywek
-                </Paragraph>
-              </div>
-              <div className={styles.facilityButton}>
-                <Button style={{ width: '100%' }} variant='signup'>
-                  Sprawdź terminy
-                </Button>
-              </div>
-            </div>
-          </Link>
-        </Col>
-        <Col span={4} xs={24} md={12} xl={8}>
-          <Link to='/facility/3' className={styles.cardLink}>
-            <div className={styles.facilityCard3}>
-              <div className={styles.facilityDescription}>
-                <Title className={styles.cardTitle} level={3}>
-                  Sala do squasha
-                </Title>
-                <Paragraph className={styles.cardParagrapgh}>
-                  przeznaczona do gry w squasha <br /> w zamkniętej przestrzeni
-                  z czterema ścianmi,
-                  <br /> umożliwająca szybkie i dynamiczne zagrywki <br />
-                </Paragraph>
-              </div>
-              <div className={styles.facilityButton}>
-                <Button style={{ width: '100%' }} variant='signup'>
-                  Sprawdź terminy
-                </Button>
-              </div>
-            </div>
-          </Link>
-        </Col>
+        {facilities.map((facility) => {
+          const meta = getFacilityMeta(facility.type);
+          return (
+            <Col span={4} xs={24} md={12} xl={8} key={facility.id}>
+              <Link to={`/facility/${facility.id}`} className={styles.cardLink}>
+                <div className={styles[meta.cardClass] || styles.facilityCard}>
+                  <div className={styles.facilityDescription}>
+                    <Title className={styles.cardTitle} level={3}>
+                      {facility.name}
+                    </Title>
+                    <Paragraph className={styles.cardParagrapgh}>
+                      {facility.description}
+                    </Paragraph>
+                  </div>
+                  <div className={styles.facilityButton}>
+                    <Button style={{ width: '100%' }} variant='signup'>
+                      Sprawdź terminy
+                    </Button>
+                  </div>
+                </div>
+              </Link>
+            </Col>
+          );
+        })}
       </Row>
     </div>
   );

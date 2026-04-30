@@ -83,3 +83,63 @@ export async function sendReservationConfirmationEmail(
     console.error('Błąd podczas wysyłania emaila z potwierdzeniem rezerwacji:', error);
   }
 }
+
+export async function sendReservationApprovedEmail(
+  dto: import('../types/email.types.js').ReservationStatusEmailDTO
+) {
+  try {
+    await transporter.sendMail({
+      from: env.SMTP_USER,
+      to: dto.to,
+      subject: `Rezerwacja zatwierdzona: ${dto.facilityName} - TAW Rezerwacje`,
+      html: `
+            <h2 style="color: #52c41a;">✅ Rezerwacja zatwierdzona</h2>
+            <p>Witaj <strong>${dto.userName}</strong>,</p>
+            <p>Twoja rezerwacja została <strong>zatwierdzona</strong> przez administratora.</p>
+            <div style="background-color: #f6ffed; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #52c41a;">
+              <p><strong>Obiekt:</strong> ${dto.facilityName}</p>
+              <p><strong>Data:</strong> ${dto.date}</p>
+              <p><strong>Godzina:</strong> ${dto.time}</p>
+            </div>
+            <p>Do zobaczenia!</p>
+            <p style="font-size: 12px; color: #777;">To jest wiadomość automatyczna, prosimy na nią nie odpowiadać.</p>
+            `,
+    });
+    console.log(`Email z zatwierdzeniem rezerwacji wysłany do: ${dto.to}`);
+  } catch (error) {
+    console.error('Błąd wysyłania emaila z zatwierdzeniem:', error);
+  }
+}
+
+export async function sendReservationRejectedEmail(
+  dto: import('../types/email.types.js').ReservationStatusEmailDTO
+) {
+  try {
+    const reasonBlock = dto.reason
+      ? `<p><strong>Powód odmowy:</strong> ${dto.reason}</p>`
+      : '';
+
+    await transporter.sendMail({
+      from: env.SMTP_USER,
+      to: dto.to,
+      subject: `Rezerwacja odrzucona: ${dto.facilityName} - TAW Rezerwacje`,
+      html: `
+            <h2 style="color: #ff4d4f;">❌ Rezerwacja odrzucona</h2>
+            <p>Witaj <strong>${dto.userName}</strong>,</p>
+            <p>Niestety, Twoja rezerwacja została <strong>odrzucona</strong> przez administratora.</p>
+            <div style="background-color: #fff2f0; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ff4d4f;">
+              <p><strong>Obiekt:</strong> ${dto.facilityName}</p>
+              <p><strong>Data:</strong> ${dto.date}</p>
+              <p><strong>Godzina:</strong> ${dto.time}</p>
+              ${reasonBlock}
+            </div>
+            <p>Zapraszamy do ponownej rezerwacji w innym terminie.</p>
+            <p style="font-size: 12px; color: #777;">To jest wiadomość automatyczna, prosimy na nią nie odpowiadać.</p>
+            `,
+    });
+    console.log(`Email z odrzuceniem rezerwacji wysłany do: ${dto.to}`);
+  } catch (error) {
+    console.error('Błąd wysyłania emaila z odrzuceniem:', error);
+  }
+}
+

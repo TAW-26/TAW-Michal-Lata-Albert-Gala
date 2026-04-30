@@ -152,3 +152,10 @@ export async function remove(id: number): Promise<void> {
     id,
   ]);
 }
+
+export async function findAllAdmin(): Promise<Facility[]> {
+  const result = await pool.query<Facility>(
+    'SELECT * FROM facilities ORDER BY created_at DESC'
+  );
+  return result.rows;
+}

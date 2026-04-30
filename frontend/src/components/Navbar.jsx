@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import styles from './Navbar.module.css';
 
 const Navbar = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -37,6 +37,16 @@ const Navbar = () => {
       >
         {isAuthenticated ? (
           <>
+            {user?.role === 'admin' && (
+              <Link
+                to='/admin'
+                className={`${styles.navButton} ${styles.navButtonOutline}`}
+                onClick={closeMenu}
+                style={{ borderColor: '#7c7fff', color: '#7c7fff' }}
+              >
+                Panel Admin
+              </Link>
+            )}
             <Link
               to='/profile'
               className={`${styles.navButton} ${styles.navButtonFilled}`}

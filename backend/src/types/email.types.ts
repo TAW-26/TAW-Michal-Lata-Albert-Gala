@@ -23,3 +23,13 @@ export interface ReservationEmailDTO {
   userPhone: string;
   userEmail: string;
 }
+
+export interface ReservationStatusEmailDTO {
+  to: string;
+  userName: string;
+  facilityName: string;
+  date: string;
+  time: string;
+  status: 'approved' | 'rejected';
+  reason?: string;
+}

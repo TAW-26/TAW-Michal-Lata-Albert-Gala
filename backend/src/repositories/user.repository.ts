@@ -132,3 +132,10 @@ export async function changePassword(
 export async function deleteById(id: number): Promise<void> {
   await pool.query('DELETE FROM users WHERE id = $1', [id]);
 }
+
+export async function findAll(): Promise<User[]> {
+  const result = await pool.query<User>(
+    'SELECT * FROM users ORDER BY created_at DESC'
+  );
+  return result.rows;
+}

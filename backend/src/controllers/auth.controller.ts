@@ -50,7 +50,7 @@ export async function login(
     const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict' as const,
+      sameSite: 'lax' as const,
       ...(rememberMe ? { maxAge: 30 * 24 * 60 * 60 * 1000 } : {}),
     };
 
@@ -97,7 +97,7 @@ export async function logout(
     res.clearCookie('token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
     });
     res.status(200).json({ message: 'Wylogowano pomyślnie' });
   } catch (error) {

@@ -1,0 +1,310 @@
+.adminContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+}
+
+.adminTitle {
+  background: linear-gradient(90deg, var(--color-blue), var(--color-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 4px !important;
+}
+
+.adminSubtitle {
+  color: var(--color-grey) !important;
+  font-size: 1rem !important;
+  margin-bottom: 32px !important;
+  font-weight: 500 !important;
+}
+
+/* Tabs override */
+.adminTabs :global(.ant-tabs-nav) {
+  margin-bottom: 24px;
+}
+
+.adminTabs :global(.ant-tabs-tab) {
+  font-size: 15px;
+  padding: 12px 20px;
+  color: var(--color-grey);
+  transition: all 0.3s ease;
+}
+
+.adminTabs :global(.ant-tabs-tab:hover) {
+  color: var(--color-blue);
+}
+
+.adminTabs :global(.ant-tabs-tab-active .ant-tabs-tab-btn) {
+  color: var(--color-blue) !important;
+  font-weight: 600;
+}
+
+.adminTabs :global(.ant-tabs-ink-bar) {
+  background: var(--color-blue);
+  height: 3px !important;
+  border-radius: 3px;
+}
+
+/* Card styles */
+.sectionCard {
+  background: #fff;
+  border: 2px solid var(--color-blue);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 4px 24px rgba(71, 166, 255, 0.08);
+}
+
+.sectionTitle {
+  background: linear-gradient(90deg, var(--color-blue), var(--color-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 20px !important;
+}
+
+/* Table styles */
+.adminTable :global(.ant-table) {
+  background: transparent !important;
+}
+
+.adminTable :global(.ant-table-thead > tr > th) {
+  background: rgba(71, 166, 255, 0.08) !important;
+  color: var(--color-blue) !important;
+  border-bottom: 2px solid rgba(71, 166, 255, 0.15) !important;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.adminTable :global(.ant-table-tbody > tr > td) {
+  background: #fff !important;
+  color: var(--color-black) !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  transition: background 0.2s ease;
+}
+
+.adminTable :global(.ant-table-tbody > tr:hover > td) {
+  background: rgba(71, 166, 255, 0.04) !important;
+}
+
+.adminTable :global(.ant-table-cell-row-hover) {
+  background: rgba(71, 166, 255, 0.04) !important;
+}
+
+.adminTable :global(.ant-pagination) {
+  margin-top: 16px;
+}
+
+.adminTable :global(.ant-pagination .ant-pagination-item-active) {
+  border-color: var(--color-blue);
+}
+
+.adminTable :global(.ant-pagination .ant-pagination-item-active a) {
+  color: var(--color-blue);
+}
+
+.adminTable :global(.ant-empty-description) {
+  color: var(--color-grey);
+}
+
+/* Buttons */
+.approveBtn {
+  background: #52c41a !important;
+  border-color: #52c41a !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.approveBtn:hover {
+  background: #73d13d !important;
+  border-color: #73d13d !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+}
+
+.rejectBtn {
+  background: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.rejectBtn:hover {
+  background: #ff7875 !important;
+  border-color: #ff7875 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3);
+}
+
+.saveBtn {
+  background: var(--color-blue) !important;
+  border-color: var(--color-blue) !important;
+  color: #fff !important;
+  font-weight: 700;
+  border-radius: 8px;
+  height: 36px;
+  transition: all 0.2s ease;
+}
+
+.saveBtn:hover {
+  background: #3594e8 !important;
+  border-color: #3594e8 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(71, 166, 255, 0.3);
+}
+
+/* Price input */
+.priceInput {
+  width: 140px;
+}
+
+.priceInput :global(.ant-input-number) {
+  border: 2px solid var(--color-blue) !important;
+  border-radius: 8px;
+}
+
+/* Schedule form */
+.scheduleSection {
+  margin-top: 20px;
+}
+
+.scheduleGrid {
+  display: grid;
+  grid-template-columns: 180px 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 14px 20px;
+  background: rgba(71, 166, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+}
+
+.scheduleGrid:hover {
+  border-color: rgba(71, 166, 255, 0.2);
+  background: rgba(71, 166, 255, 0.05);
+}
+
+.dayLabel {
+  color: var(--color-black);
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scheduleActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+/* Status badges */
+.statusBadge {
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.statusPending {
+  background: rgba(250, 173, 20, 0.12);
+  color: #d48806;
+  border: 1px solid rgba(250, 173, 20, 0.3);
+}
+
+.statusConfirmed {
+  background: rgba(82, 196, 26, 0.12);
+  color: #389e0d;
+  border: 1px solid rgba(82, 196, 26, 0.3);
+}
+
+.statusRejected {
+  background: rgba(255, 77, 79, 0.1);
+  color: #cf1322;
+  border: 1px solid rgba(255, 77, 79, 0.25);
+}
+
+.statusCancelled {
+  background: rgba(0, 0, 0, 0.04);
+  color: #8c8c8c;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.statusCompleted {
+  background: rgba(24, 144, 255, 0.1);
+  color: #096dd9;
+  border: 1px solid rgba(24, 144, 255, 0.25);
+}
+
+/* Filter section */
+.filterSection {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filterLabel {
+  color: var(--color-grey);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* User details modal */
+.userDetailRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.userDetailLabel {
+  font-weight: 700;
+  color: var(--color-blue);
+}
+
+.userDetailValue {
+  color: var(--color-black);
+}
+
+/* Loading */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .adminContainer {
+    padding: 24px 16px 40px;
+  }
+
+  .scheduleGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .filterSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

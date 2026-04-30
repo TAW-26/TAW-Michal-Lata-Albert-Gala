@@ -19,7 +19,9 @@ import ResetPassword from './pages/ResetPassword.jsx';
 import Choose from './pages/ChooseScreen.jsx';
 import FacilityId from './pages/Facility/FacilityId.jsx';
 import Profile from './pages/Profile.jsx';
+import AdminPanel from './pages/AdminPanel/AdminPanel.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import AdminRoute from './components/AdminRoute.jsx';
 import AppWrapper from './AppWrapper.jsx';
 
 const router = createBrowserRouter(
@@ -41,6 +43,14 @@ const router = createBrowserRouter(
             <ProtectedRoute>
               <Profile />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/admin'
+          element={
+            <AdminRoute>
+              <AdminPanel />
+            </AdminRoute>
           }
         />
       </Route>
