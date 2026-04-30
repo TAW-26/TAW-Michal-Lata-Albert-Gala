@@ -1,7 +1,7 @@
 import styles from './Login.module.css';
 import { Row, Col, Typography } from 'antd';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/Buttons';
 
@@ -9,7 +9,11 @@ const { Title, Paragraph } = Typography;
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
+
+  if (isAuthenticated) {
+    return <Navigate to='/choose' replace />;
+  }
   const {
     register,
     handleSubmit,
