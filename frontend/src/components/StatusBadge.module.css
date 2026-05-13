@@ -1,0 +1,39 @@
+.statusBadge {
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.statusPending {
+  background: rgba(250, 173, 20, 0.12);
+  color: #d48806;
+  border: 1px solid rgba(250, 173, 20, 0.3);
+}
+
+.statusConfirmed {
+  background: rgba(82, 196, 26, 0.12);
+  color: #389e0d;
+  border: 1px solid rgba(82, 196, 26, 0.3);
+}
+
+.statusRejected {
+  background: rgba(255, 77, 79, 0.1);
+  color: #cf1322;
+  border: 1px solid rgba(255, 77, 79, 0.25);
+}
+
+.statusCancelled {
+  background: rgba(0, 0, 0, 0.04);
+  color: #8c8c8c;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.statusCompleted {
+  background: rgba(24, 144, 255, 0.1);
+  color: #096dd9;
+  border: 1px solid rgba(24, 144, 255, 0.25);
+}

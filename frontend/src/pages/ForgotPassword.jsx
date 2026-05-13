@@ -1,7 +1,10 @@
 import { Row, Col, Typography } from 'antd';
 import styles from './ForgotPassword.module.css';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Button from '../components/Buttons';
+import FormField from '../components/FormField';
+import apiClient from '../api/apiClient';
 
 const { Title } = Typography;
 
@@ -22,24 +25,10 @@ const ForgotPassword = () => {
       return;
     }
     try {
-      const response = await fetch(
-        'http://localhost:3000/api/auth/forgot-password',
-        {
-          method: 'POST',
-          body: JSON.stringify({ email }),
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-        }
-      );
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Coś poszło nie tak');
-      }
+      await apiClient.post('/auth/forgot-password', { email });
       setSuccess(true);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       setError(err.message);
     } finally {
       setIsSubmitting(false);
@@ -55,14 +44,13 @@ const ForgotPassword = () => {
             <Title level={1} className={styles.titleMain}>
               Zapomniałeś hasła?
             </Title>
-            <div className={styles.inputGroup}>
-              <label htmlFor='email'>Email</label>
-              <input
-                type='email'
-                placeholder='Podaj swój adres email'
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
+            <FormField
+              label='Email'
+              id='email'
+              type='email'
+              placeholder='Podaj swój adres email'
+              onChange={(e) => setEmail(e.target.value)}
+            />
             {error && <p className={styles.errorText}>{error}</p>}
             {success && (
               <p className={styles.successText}>
@@ -80,7 +68,7 @@ const ForgotPassword = () => {
             </Button>
             <div className={styles.actionLinks}>
               <p>
-                Powrót do logowania <a href='/login'>Zaloguj się</a>
+                Powrót do logowania <Link to='/login'>Zaloguj się</Link>
               </p>
             </div>
           </div>

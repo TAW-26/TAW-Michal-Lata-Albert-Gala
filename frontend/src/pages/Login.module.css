@@ -187,9 +187,9 @@
 .actionLinks {
   display: flex;
   flex-direction: column;
-  align-items: left;
-  gap: -16px;
+  align-items: flex-start;
 }
 .actionLinks p {
   margin-bottom: 0;
 }
+

@@ -1,23 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import styles from './FacilityId.module.css';
-import {
-  Row,
-  Col,
-  Typography,
-  Calendar,
-  Input,
-  Button,
-  Spin,
-  message,
-} from 'antd';
+import { Row, Col, Typography, Calendar, Input, Button, message } from 'antd';
 import { getFacilityMeta } from './facilityData';
 import { useAuth } from '../../context/AuthContext';
+import { DAY_NAMES_SHORT } from '../../utils/constants';
+import apiClient from '../../api/apiClient';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const { Title, Paragraph } = Typography;
-
-const DAY_NAMES_SHORT = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nd'];
 
 const FacilityId = () => {
   const { id } = useParams();
@@ -44,16 +36,12 @@ const FacilityId = () => {
 
   // Fetch facility details + schedule from API
   useEffect(() => {
-    const fetchFacility = async () => {
+    const loadFacilityData = async () => {
       setLoadingFacility(true);
       try {
         const [facilityRes, scheduleRes] = await Promise.all([
-          fetch(`http://localhost:3000/api/facilities/${id}`, {
-            credentials: 'include',
-          }),
-          fetch(`http://localhost:3000/api/facilities/${id}/schedule`, {
-            credentials: 'include',
-          }),
+          apiClient.raw.get(`/facilities/${id}`),
+          apiClient.raw.get(`/facilities/${id}/schedule`),
         ]);
 
         if (!facilityRes.ok) {
@@ -75,7 +63,7 @@ const FacilityId = () => {
         setLoadingFacility(false);
       }
     };
-    fetchFacility();
+    loadFacilityData();
   }, [id]);
 
   // Pre-fill form when user data loads
@@ -90,23 +78,41 @@ const FacilityId = () => {
     }
   }, [user]);
 
+  const fetchSlots = useCallback(
+    async (dateStr) => {
+      setLoadingSlots(true);
+      setSlots([]);
+      setSelectedSlotIndex(null);
+      try {
+        const data = await apiClient.get(
+          `/facilities/${id}/availability?date=${dateStr}`
+        );
+        setSlots(data.slots || []);
+      } catch (err) {
+        console.error('Error fetching slots:', err);
+        setSlots([]);
+      } finally {
+        setLoadingSlots(false);
+      }
+    },
+    [id]
+  );
+
+  const onDateSelect = useCallback(
+    (value) => {
+      setSelectedDate(value);
+      const dateStr = value.format('YYYY-MM-DD');
+      fetchSlots(dateStr);
+    },
+    [fetchSlots]
+  );
+
   if (notFound) {
     return <Navigate to='/choose' replace />;
   }
 
   if (loadingFacility) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '60vh',
-        }}
-      >
-        <Spin size='large' />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (!facility) {
@@ -116,29 +122,15 @@ const FacilityId = () => {
   const meta = getFacilityMeta(facility.type);
   const slotDuration = meta.slotDuration || 1;
 
-  // Build hours display from schedules
-  const getHoursDisplay = (dayRange) => {
-    const days = dayRange === 'weekday' ? [0, 1, 2, 3, 4] : [5, 6];
-    const daySchedules = schedules.filter((s) => days.includes(s.day_of_week));
-    if (daySchedules.length === 0) return 'Zamknięte';
-
-    // Find most common pattern
-    const openTime = daySchedules[0]?.open_time?.substring(0, 5) || '—';
-    const closeTime = daySchedules[0]?.close_time?.substring(0, 5) || '—';
-    return `${openTime}-${closeTime}`;
-  };
-
   // Build per-day schedule display
-  const getPerDaySchedule = () => {
-    return DAY_NAMES_SHORT.map((name, i) => {
-      const s = schedules.find((sch) => sch.day_of_week === i);
-      if (!s) return { day: name, hours: 'Zamknięte' };
-      return {
-        day: name,
-        hours: `${s.open_time.substring(0, 5)}-${s.close_time.substring(0, 5)}`,
-      };
-    });
-  };
+  const perDaySchedule = DAY_NAMES_SHORT.map((name, i) => {
+    const scheduleEntry = schedules.find((sch) => sch.day_of_week === i);
+    if (!scheduleEntry) return { day: name, hours: 'Zamknięte' };
+    return {
+      day: name,
+      hours: `${scheduleEntry.open_time.substring(0, 5)}-${scheduleEntry.close_time.substring(0, 5)}`,
+    };
+  });
 
   const priceInfo = `${Number(facility.hourly_rate).toFixed(0)} zł / ${slotDuration}h`;
 
@@ -146,40 +138,11 @@ const FacilityId = () => {
     return current && current < dayjs().startOf('day');
   };
 
-  const fetchSlots = async (dateStr) => {
-    setLoadingSlots(true);
-    setSlots([]);
-    setSelectedSlotIndex(null);
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/facilities/${id}/availability?date=${dateStr}`,
-        { credentials: 'include' }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setSlots(data.slots || []);
-      } else {
-        setSlots([]);
-      }
-    } catch (err) {
-      console.error('Error fetching slots:', err);
-      setSlots([]);
-    } finally {
-      setLoadingSlots(false);
-    }
-  };
-
-  const onDateSelect = (value) => {
-    setSelectedDate(value);
-    const dateStr = value.format('YYYY-MM-DD');
-    fetchSlots(dateStr);
-  };
-
   const canSelectSlot = (index) => {
     for (let i = 0; i < slotDuration; i++) {
-      const si = index + i;
-      if (si >= slots.length) return false;
-      if (!slots[si].available) return false;
+      const slotIndex = index + i;
+      if (slotIndex >= slots.length) return false;
+      if (!slots[slotIndex].available) return false;
     }
     return true;
   };
@@ -203,6 +166,10 @@ const FacilityId = () => {
     return styles.slotAvailable;
   };
 
+  const handleFormChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
   const handleSubmitReservation = async () => {
     if (selectedSlotIndex === null || !selectedDate) {
       message.error('Wybierz datę i godzinę.');
@@ -224,24 +191,15 @@ const FacilityId = () => {
 
     setSubmitting(true);
     try {
-      const response = await fetch('http://localhost:3000/api/reservations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          facilityId: parseInt(id),
-          startTime,
-          endTime,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-        }),
+      await apiClient.post('/reservations', {
+        facilityId: parseInt(id),
+        startTime,
+        endTime,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
       });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Błąd tworzenia rezerwacji');
-      }
       message.success(
         'Rezerwacja została wysłana! Oczekuje na zatwierdzenie przez administratora.'
       );
@@ -258,8 +216,6 @@ const FacilityId = () => {
     selectedSlotIndex !== null
       ? `${slots[selectedSlotIndex].startTime} - ${slots[selectedSlotIndex + slotDuration - 1].endTime}`
       : null;
-
-  const perDaySchedule = getPerDaySchedule();
 
   return (
     <div className={styles.container}>
@@ -286,7 +242,7 @@ const FacilityId = () => {
               <Title className={styles.cardTitle} level={3}>
                 {facility.name}
               </Title>
-              <Paragraph className={styles.cardParagrapgh}>
+              <Paragraph className={styles.cardParagraph}>
                 {facility.description}
               </Paragraph>
               <div className={styles.aboutContainer}>
@@ -338,9 +294,7 @@ const FacilityId = () => {
                     Cena za wynajem:
                   </strong>
                 </Paragraph>
-                <Paragraph className={styles.aboutValue}>
-                  {priceInfo}
-                </Paragraph>
+                <Paragraph className={styles.aboutValue}>{priceInfo}</Paragraph>
               </div>
             </div>
           </div>
@@ -375,9 +329,7 @@ const FacilityId = () => {
                   Dostępne godziny:
                 </Title>
                 {loadingSlots ? (
-                  <div className={styles.slotsLoading}>
-                    <Spin size='small' />
-                  </div>
+                  <LoadingSpinner size='small' minHeight='60px' />
                 ) : slots.length === 0 ? (
                   <Paragraph className={styles.noSlots}>
                     Brak dostępnych godzin w tym dniu.
@@ -424,7 +376,7 @@ const FacilityId = () => {
                     size='large'
                     value={formData.firstName}
                     onChange={(e) =>
-                      setFormData({ ...formData, firstName: e.target.value })
+                      handleFormChange('firstName', e.target.value)
                     }
                   />
                   <Input
@@ -433,7 +385,7 @@ const FacilityId = () => {
                     size='large'
                     value={formData.lastName}
                     onChange={(e) =>
-                      setFormData({ ...formData, lastName: e.target.value })
+                      handleFormChange('lastName', e.target.value)
                     }
                   />
                   <Input
@@ -441,9 +393,7 @@ const FacilityId = () => {
                     placeholder='E-mail'
                     size='large'
                     value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
+                    onChange={(e) => handleFormChange('email', e.target.value)}
                   />
                   <Input
                     className={styles.formInput}
@@ -452,7 +402,7 @@ const FacilityId = () => {
                     value={formData.phone}
                     status={phoneError ? 'error' : ''}
                     onChange={(e) => {
-                      setFormData({ ...formData, phone: e.target.value });
+                      handleFormChange('phone', e.target.value);
                       if (e.target.value.replace(/\D/g, '').length >= 9) {
                         setPhoneError('');
                       }

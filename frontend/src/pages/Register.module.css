@@ -98,36 +98,7 @@
   box-shadow: 0 0 0 2px rgba(71, 166, 255, 0.2);
 }
 
-.checkboxGroup {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 32px;
-}
 
-.checkboxGroup input[type='checkbox'] {
-  width: 24px;
-  height: 24px;
-  appearance: none;
-  background-color: var(--color-grey-bg);
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.checkboxGroup input[type='checkbox']:checked::after {
-  content: '✓';
-  color: var(--color-blue);
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.checkboxGroup label {
-  font-size: 16px;
-  cursor: pointer;
-}
 
 .loginLink {
   margin-top: 32px;

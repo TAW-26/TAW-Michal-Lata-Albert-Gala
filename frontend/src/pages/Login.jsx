@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/Buttons';
+import FormField from '../components/FormField';
 
 const { Title, Paragraph } = Typography;
 
@@ -24,11 +25,11 @@ const Login = () => {
     return <Navigate to='/choose' replace />;
   }
 
-  const handleLogin = async (data) => {
+  const handleLogin = async (formValues) => {
     try {
       const response = await fetch('http://localhost:3000/api/auth/login', {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: JSON.stringify(formValues),
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
@@ -38,7 +39,7 @@ const Login = () => {
       const responseData = await response.json();
       if (!response.ok) {
         throw new Error(
-          responseData.error || 'Wystapil blad podczas logowania'
+          responseData.error || 'Wystąpił błąd podczas logowania'
         );
       }
       login(responseData.user);
@@ -46,10 +47,11 @@ const Login = () => {
     } catch (err) {
       console.error(err);
       setError('root', {
-        message: err.message || 'Wystapil blad podczas polaczenia z serwerem',
+        message: err.message || 'Wystąpił błąd podczas połączenia z serwerem',
       });
     }
   };
+
   return (
     <>
       <div className={styles.pageBackground}></div>
@@ -62,7 +64,8 @@ const Login = () => {
           <Col xs={0} sm={0} md={10} lg={8} xl={6}>
             <div className={styles.leftCard}>
               <Title level={2} className={styles.overlayTitle}>
-                Technologie aplikacji <br /> webowych
+                Technologie aplikacji <br />
+                webowych
               </Title>
               <Title level={3} className={styles.overlaySubtitle}>
                 Rezerwacja obiektów
@@ -83,43 +86,33 @@ const Login = () => {
                 </Title>
               </div>
               <form noValidate onSubmit={handleSubmit(handleLogin)}>
-                <div className={styles.inputGroup}>
-                  <label htmlFor='email'>Email</label>
-                  <input
-                    type='email'
-                    {...register('email', {
-                      required: 'Musisz podac email',
-                      pattern: {
-                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                        message: 'Nieprawidlowy format email',
-                      },
-                    })}
-                  />
-                  {errors.email && (
-                    <div className={styles.errorMessage}>
-                      {errors.email.message}
-                    </div>
-                  )}
-                </div>
-                <div className={styles.inputGroup}>
-                  <label htmlFor='password'>Hasło</label>
-                  <input
-                    type='password'
-                    {...register('password', {
-                      required: 'Musisz wpisać hasło',
-                      pattern: {
-                        value: /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/,
-                        message:
-                          'Co najmniej 8 znaków, wielka litera, cyfra i znak specjalny',
-                      },
-                    })}
-                  />
-                  {errors.password && (
-                    <div className={styles.errorMessage}>
-                      {errors.password.message}
-                    </div>
-                  )}
-                </div>
+                <FormField
+                  label='Email'
+                  id='email'
+                  type='email'
+                  error={errors.email?.message}
+                  register={register('email', {
+                    required: 'Musisz podać email',
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: 'Nieprawidłowy format email',
+                    },
+                  })}
+                />
+                <FormField
+                  label='Hasło'
+                  id='password'
+                  type='password'
+                  error={errors.password?.message}
+                  register={register('password', {
+                    required: 'Musisz wpisać hasło',
+                    pattern: {
+                      value: /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/,
+                      message:
+                        'Co najmniej 8 znaków, wielka litera, cyfra i znak specjalny',
+                    },
+                  })}
+                />
                 <div className={styles.checkboxGroup}>
                   <input
                     type='checkbox'

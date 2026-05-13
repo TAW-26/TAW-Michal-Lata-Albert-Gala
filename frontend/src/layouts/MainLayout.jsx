@@ -1,14 +1,13 @@
 import { Outlet } from 'react-router-dom';
 import Footer from '../components/Footer.jsx';
 import Navbar from '../components/Navbar.jsx';
+import styles from './Layout.module.css';
 
 const MainLayout = () => {
   return (
-    <div
-      style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
-    >
+    <div className={styles.layoutWrapper}>
       <Navbar />
-      <div style={{ flex: 1, paddingTop: '68px' }}>
+      <div className={styles.contentArea}>
         <Outlet />
       </div>
       <Footer />

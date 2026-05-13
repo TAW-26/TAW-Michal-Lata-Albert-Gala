@@ -90,7 +90,8 @@
   color: var(--color-blue) !important;
 }
 
-.cardParagrapgh {
+.cardParagraph {
+
   color: var(--color-black);
   margin-bottom: 0 !important;
 }

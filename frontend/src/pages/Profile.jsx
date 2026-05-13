@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Typography, Row, Col, Modal } from 'antd';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/Buttons';
+import FormField from '../components/FormField';
+import apiClient from '../api/apiClient';
+import {
+  PASSWORD_REGEX,
+  PASSWORD_REQUIREMENTS_MESSAGE,
+} from '../utils/constants';
 import styles from './Profile.module.css';
 
 const { Title, Paragraph } = Typography;
@@ -30,29 +36,17 @@ const Profile = () => {
       return;
     }
 
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
-    if (!passwordRegex.test(newPassword)) {
-      setPasswordError(
-        'Nieprawidłowy format hasła (wymagane 8 znaków, wielka litera, cyfra i znak specjalny)'
-      );
+    if (!PASSWORD_REGEX.test(newPassword)) {
+      setPasswordError(PASSWORD_REQUIREMENTS_MESSAGE);
       return;
     }
 
     setChangingPassword(true);
     try {
-      const response = await fetch(
-        'http://localhost:3000/api/users/me/password',
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ currentPassword, newPassword }),
-        }
-      );
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Błąd zmiany hasła');
-      }
+      await apiClient.put('/users/me/password', {
+        currentPassword,
+        newPassword,
+      });
       setPasswordSuccess('Hasło zostało zmienione pomyślnie.');
       setCurrentPassword('');
       setNewPassword('');
@@ -75,14 +69,7 @@ const Profile = () => {
         setDeleting(true);
         setDeleteError('');
         try {
-          const response = await fetch('http://localhost:3000/api/users/me', {
-            method: 'DELETE',
-            credentials: 'include',
-          });
-          const data = await response.json();
-          if (!response.ok) {
-            throw new Error(data.error || 'Błąd usuwania konta');
-          }
+          await apiClient.del('/users/me');
           await logout();
           navigate('/');
         } catch (err) {
@@ -127,24 +114,20 @@ const Profile = () => {
                 Zmiana hasła
               </Title>
               <form onSubmit={handleChangePassword}>
-                <div className={styles.inputGroup}>
-                  <label htmlFor='currentPassword'>Obecne hasło</label>
-                  <input
-                    type='password'
-                    id='currentPassword'
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                  />
-                </div>
-                <div className={styles.inputGroup}>
-                  <label htmlFor='newPassword'>Nowe hasło</label>
-                  <input
-                    type='password'
-                    id='newPassword'
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                  />
-                </div>
+                <FormField
+                  label='Obecne hasło'
+                  id='currentPassword'
+                  type='password'
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                />
+                <FormField
+                  label='Nowe hasło'
+                  id='newPassword'
+                  type='password'
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
                 {passwordSuccess && (
                   <div className={styles.successMessage}>{passwordSuccess}</div>
                 )}

@@ -1,17 +1,23 @@
 import { Row, Col, Typography } from 'antd';
 import styles from './ForgotPassword.module.css';
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Button from '../components/Buttons';
+import FormField from '../components/FormField';
+import apiClient from '../api/apiClient';
+import {
+  PASSWORD_REGEX,
+  PASSWORD_REQUIREMENTS_MESSAGE,
+} from '../utils/constants';
 
 const { Title } = Typography;
 
 const ResetPassword = () => {
   const { token } = useParams();
+  const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [success, setSuccess] = useState(false);
-  const navigate = useNavigate();
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -29,35 +35,20 @@ const ResetPassword = () => {
       return;
     }
 
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      setError('Co najmniej 8 znaków, wielka litera, cyfra i znak specjalny');
+    if (!PASSWORD_REGEX.test(password)) {
+      setError(PASSWORD_REQUIREMENTS_MESSAGE);
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/auth/reset-password/${token}`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ password }),
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-        }
-      );
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Nieprawidłowy lub wygasły link');
-      }
+      await apiClient.post(`/auth/reset-password/${token}`, { password });
       setSuccess(true);
       setTimeout(() => {
         navigate('/login');
       }, 5000);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       setError(err.message);
     } finally {
       setIsSubmitting(false);
@@ -73,26 +64,22 @@ const ResetPassword = () => {
             <Title level={1} className={styles.titleMain}>
               Utwórz nowe hasło
             </Title>
-            <div className={styles.inputGroup}>
-              <label htmlFor='password'>Nowe hasło</label>
-              <input
-                type='password'
-                id='password'
-                placeholder='Wpisz nowe hasło'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <div className={styles.inputGroup}>
-              <label htmlFor='confirmPassword'>Potwierdź hasło</label>
-              <input
-                type='password'
-                id='confirmPassword'
-                placeholder='Wpisz ponownie nowe hasło'
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
+            <FormField
+              label='Nowe hasło'
+              id='password'
+              type='password'
+              placeholder='Wpisz nowe hasło'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <FormField
+              label='Potwierdź hasło'
+              id='confirmPassword'
+              type='password'
+              placeholder='Wpisz ponownie nowe hasło'
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
             {error && <p className={styles.errorText}>{error}</p>}
             {success && (
               <p className={styles.successText}>
@@ -111,7 +98,7 @@ const ResetPassword = () => {
             </Button>
             <div className={styles.actionLinks}>
               <p>
-                Powrót do logowania <a href='/login'>Zaloguj się</a>
+                Powrót do logowania <Link to='/login'>Zaloguj się</Link>
               </p>
             </div>
           </div>

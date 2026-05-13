@@ -170,11 +170,7 @@
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
 }
 
-.formTitle {
-  color: var(--color-black) !important;
-  font-style: italic;
-  margin-bottom: 16px !important;
-}
+
 
 .formFields {
   display: flex;
@@ -337,10 +333,7 @@
   padding: 24px 0;
 }
 
-.loginPromptIcon {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
+
 
 .loginPromptTitle {
   color: var(--color-blue) !important;
