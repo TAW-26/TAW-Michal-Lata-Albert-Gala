@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import styles from './ChooseScreen.module.css';
-import { Row, Col, Typography, Spin } from 'antd';
+import { Row, Col, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import Button from '../components/Buttons';
+import LoadingSpinner from '../components/LoadingSpinner';
+import apiClient from '../api/apiClient';
 import { getFacilityMeta } from './Facility/facilityData';
 
 const { Title, Paragraph } = Typography;
@@ -12,37 +14,21 @@ const ChooseScreen = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchFacilities = async () => {
+    const loadFacilities = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/facilities', {
-          credentials: 'include',
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setFacilities(data.facilities || []);
-        }
+        const data = await apiClient.get('/facilities');
+        setFacilities(data.facilities || []);
       } catch (err) {
         console.error('Error fetching facilities:', err);
       } finally {
         setLoading(false);
       }
     };
-    fetchFacilities();
+    loadFacilities();
   }, []);
 
   if (loading) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '60vh',
-        }}
-      >
-        <Spin size='large' />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -69,7 +55,7 @@ const ChooseScreen = () => {
                     <Title className={styles.cardTitle} level={3}>
                       {facility.name}
                     </Title>
-                    <Paragraph className={styles.cardParagrapgh}>
+                    <Paragraph className={styles.cardParagraph}>
                       {facility.description}
                     </Paragraph>
                   </div>

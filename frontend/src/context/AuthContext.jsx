@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
+import apiClient from '../api/apiClient';
 
 const AuthContext = createContext(null);
 
@@ -15,49 +22,13 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/api/users/me', {
-          credentials: 'include',
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
-      } catch {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkSession();
-  }, []);
-
-  const login = (userData) => {
-    setUser(userData);
-  };
-
-  const logout = async () => {
+  /**
+   * Verify session against the API — shared between initial load
+   * and manual re-checks. Previously duplicated as checkSession + checkAuth.
+   */
+  const verifySession = useCallback(async () => {
     try {
-      await fetch('http://localhost:3000/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch (err) {
-      console.error('Logout error:', err);
-    } finally {
-      setUser(null);
-    }
-  };
-
-  const checkAuth = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/api/users/me', {
-        credentials: 'include',
-      });
+      const response = await apiClient.raw.get('/users/me');
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
@@ -67,13 +38,42 @@ export const AuthProvider = ({ children }) => {
     } catch {
       setUser(null);
     }
+  }, []);
+
+  useEffect(() => {
+    const initSession = async () => {
+      await verifySession();
+      setLoading(false);
+    };
+    initSession();
+  }, [verifySession]);
+
+  const login = (userData) => {
+    setUser(userData);
+  };
+
+  const logout = async () => {
+    try {
+      await apiClient.raw.post('/auth/logout');
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      setUser(null);
+    }
   };
 
   const isAuthenticated = !!user;
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated, loading, login, logout, checkAuth }}
+      value={{
+        user,
+        isAuthenticated,
+        loading,
+        login,
+        logout,
+        checkAuth: verifySession,
+      }}
     >
       {children}
     </AuthContext.Provider>
