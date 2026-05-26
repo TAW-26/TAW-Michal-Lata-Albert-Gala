@@ -4,11 +4,20 @@ import userRoutes from './routes/user.routes.js';
 import facilityRoutes from './routes/facility.routes.js';
 import reservationRoutes from './routes/reservation.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import { metricsMiddleware } from './middlewares/metricsMiddleware.js';
+import { register } from './monitoring/metrics.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
 const app = express();
+
+app.use(metricsMiddleware);
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
 
 app.use(
   cors({
