@@ -5,7 +5,7 @@ import facilityRoutes from './routes/facility.routes.js';
 import reservationRoutes from './routes/reservation.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import { metricsMiddleware } from './middlewares/metricsMiddleware.js';
-import { register } from './monitoring/metrics.js';
+import { register, apiErrorsTotal } from './monitoring/metrics.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -38,6 +38,14 @@ app.use('/api/users', userRoutes);
 app.use('/api/facilities', facilityRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api/admin', adminRoutes);
+
+app.use((req, res, next) => {
+  if (apiErrorsTotal) {
+      apiErrorsTotal.inc({ type: 'not_found' });
+  }
+  
+  res.status(404).json({ message: 'Nie znaleziono takiej ścieżki' });
+});
 
 app.use(errorHandler);
 
