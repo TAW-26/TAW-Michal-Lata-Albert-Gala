@@ -26,6 +26,14 @@ export const httpRequestDurationMs = new client.Histogram({
 export const activeConnections = new client.Gauge({
   name:      'active_connections',
   help:      'Liczba aktualnie obsługiwanych połączeń',
-    registers: [register],
+  registers: [register],
+});
+
+// Licznik błędów API
+export const apiErrorsTotal = new client.Counter({
+  name:      'api_errors_total',
+  help:      'Łączna liczba błędów API',
+  labelNames: ['type'],
+  registers:  [register],
 });
 
